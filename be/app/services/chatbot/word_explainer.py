@@ -2,7 +2,12 @@ from openai import OpenAI
 import os
 from app.utils.prompts import LINDA_SYSTEM_PROMPT
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+from dotenv import load_dotenv
+load_dotenv()
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 def extract_word(question: str) -> str:
     prompt = f"""
