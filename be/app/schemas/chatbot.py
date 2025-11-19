@@ -12,3 +12,6 @@ class ExplainRequest(BaseModel):
 class WordExplainResponse(BaseModel):
     text: str
     audio_url: Optional[str] = None
+
+class TTSRequest(BaseModel):
+    text: str
