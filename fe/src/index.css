@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 * {
   margin: 0;
   padding: 0;
@@ -12,4 +13,89 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom radial gradient utility */
+.bg-gradient-radial {
+  background: radial-gradient(circle, var(--tw-gradient-stops));
+}
+
+/* React-PDF styles - Critical for canvas visibility */
+.react-pdf__Page {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  position: relative;
+}
+
+.react-pdf__Page__canvas {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+/* Karaoke highlight */
+.highlight {
+  background: rgba(251, 191, 36, 0.25);
+  color: #fbbf24;
+  padding: 0 6px;
+  border-radius: 6px;
+  font-weight: 700;
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.35);
+}
+
+/* Annotation and Text Layer styles for react-pdf */
+.react-pdf__Page__annotations {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.react-pdf__Page__textContent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  opacity: 0.2;
+  line-height: 1;
+}
+
+.react-pdf__Page__textContent span {
+  color: transparent;
+  position: absolute;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0% 0%;
+}
+
+.react-pdf__Page__annotations .annotationLayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* FlipBook custom styles */
+.flipbook-container {
+  margin: 0 auto;
+}
+
+.flipbook-container .page {
+  background-color: #fef3c7;
+  border: 1px solid rgba(139, 69, 19, 0.3);
+  overflow: hidden;
+}
+
+.flipbook-container .page-shadow {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
 }
