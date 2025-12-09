@@ -9,7 +9,6 @@ function MainPage() {
       
       {/* Other sections will go here */}
       <div className="content-section">
-        <h2>More content coming soon...</h2>
       </div>
     </div>
   );
