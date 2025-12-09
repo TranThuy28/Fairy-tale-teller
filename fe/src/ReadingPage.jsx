@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
@@ -11,69 +11,102 @@ pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 function ReadingPage() {
   const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
+  const [isFlipping, setIsFlipping] = useState(false);
+  const [flipDirection, setFlipDirection] = useState('');
+  const audioRef = useRef(null);
 
   function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);
   }
 
-  function goToPrevPage() {
-    if (pageNumber === 1) return; // Can't go before cover
-    if (pageNumber === 2) {
-      setPageNumber(1); // Go back to cover
-    } else {
-      setPageNumber((prev) => Math.max(prev - 2, 2)); // Move back 2 pages
+  function playFlipSound() {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(err => console.log("Audio play failed:", err));
     }
+  }
+
+  function goToPrevPage() {
+    if (pageNumber === 1) return;
+    
+    setIsFlipping(true);
+    setFlipDirection('prev');
+    playFlipSound();
+    
+    setTimeout(() => {
+      if (pageNumber === 2) {
+        setPageNumber(1);
+      } else {
+        setPageNumber((prev) => Math.max(prev - 2, 2));
+      }
+      
+      setTimeout(() => {
+        setIsFlipping(false);
+        setFlipDirection('');
+      }, 100);
+    }, 600);
   }
 
   function goToNextPage() {
-    if (pageNumber === 1) {
-      setPageNumber(2); // From cover to first spread
-    } else {
-      setPageNumber((prev) => Math.min(prev + 2, numPages));
-    }
+    if (pageNumber >= numPages) return;
+    
+    setIsFlipping(true);
+    setFlipDirection('next');
+    playFlipSound();
+    
+    setTimeout(() => {
+      if (pageNumber === 1) {
+        setPageNumber(2);
+      } else {
+        setPageNumber((prev) => Math.min(prev + 2, numPages));
+      }
+      
+      setTimeout(() => {
+        setIsFlipping(false);
+        setFlipDirection('');
+      }, 100);
+    }, 600);
   }
 
-  // Check if we're on the cover page
   const isCover = pageNumber === 1;
-  // Check if we can go to next/previous
   const canGoNext = pageNumber < numPages;
   const canGoPrev = pageNumber > 1;
 
   return (
     <div className="reading-page">
+      <audio ref={audioRef} src="/assets/page-turn.mp3" preload="auto" />
+      
       <div className="pdf-controls">
-        <button onClick={goToPrevPage} disabled={!canGoPrev}>
+        <button onClick={goToPrevPage} disabled={!canGoPrev || isFlipping}>
           ‹ Previous
         </button>
         <span>
           {isCover ? 'Cover' : `Pages ${pageNumber}-${Math.min(pageNumber + 1, numPages)}`}
         </span>
-        <button onClick={goToNextPage} disabled={!canGoNext}>
+        <button onClick={goToNextPage} disabled={!canGoNext || isFlipping}>
           Next ›
         </button>
       </div>
 
-      <div className={`pdf-container ${isCover ? 'single-page' : 'spread-view'}`}>
+      <div className={`pdf-container ${isCover ? 'single-page' : 'spread-view'} ${isFlipping ? 'flipping' : ''}`}>
         {isCover ? (
-          // Show only cover page
           <Document
             file="/assets/Little-Prince-final-text.pdf"
             onLoadSuccess={onDocumentLoadSuccess}
             loading={<div>Loading PDF...</div>}
           >
-            <div className="page-wrapper cover">
+            <div className={`page-wrapper cover ${flipDirection === 'next' ? 'flip-next' : ''}`}>
               <Page pageNumber={1} />
             </div>
           </Document>
         ) : (
-          // Show two pages side by side
           <>
             <Document
               file="/assets/Little-Prince-final-text.pdf"
               onLoadSuccess={onDocumentLoadSuccess}
               loading={<div>Loading PDF...</div>}
             >
-              <div className="page-wrapper left-page">
+              <div className={`page-wrapper left-page ${flipDirection === 'prev' ? 'flip-prev' : ''}`}>
                 <Page pageNumber={pageNumber} />
               </div>
             </Document>
@@ -82,7 +115,7 @@ function ReadingPage() {
                 file="/assets/Little-Prince-final-text.pdf"
                 onLoadSuccess={onDocumentLoadSuccess}
               >
-                <div className="page-wrapper right-page">
+                <div className={`page-wrapper right-page ${flipDirection === 'next' ? 'flip-next' : ''}`}>
                   <Page pageNumber={pageNumber + 1} />
                 </div>
               </Document>
