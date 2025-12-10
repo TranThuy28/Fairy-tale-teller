@@ -3,7 +3,7 @@ import HTMLFlipBook from 'react-pageflip';
 import * as pdfjsLib from 'pdfjs-dist';
 import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import './ReadingPage.css';
-
+import pageTurnSound from '/assets/page-turn.mp3';
 // Configure PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
@@ -40,9 +40,11 @@ function ReadingPage() {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const bookRef = useRef();
-
+  const audioRef = useRef(null);
   useEffect(() => {
     loadPDF();
+    audioRef.current = new Audio(pageTurnSound);
+    audioRef.current.volume = 0.5;
   }, []);
 
   const loadPDF = async () => {
@@ -88,8 +90,18 @@ function ReadingPage() {
     }
   };
 
+  const playPageTurnSound = () => {
+      if (audioRef.current) {
+        audioRef.current.currentTime = 0; // Reset to start
+        audioRef.current.play().catch(err => {
+          console.log('Audio play failed:', err);
+        });
+      }
+    };
+
   const onFlip = (e) => {
     setCurrentPage(e.data);
+    playPageTurnSound();
   };
 
   const goToNextPage = () => {
@@ -143,7 +155,7 @@ function ReadingPage() {
 
   return (
     <div className="reading-page">
-      <div className="book-container">
+      <div className="book-container" style={{ width: '60%', margin: '0 auto' }}>
         <HTMLFlipBook
           ref={bookRef}
           width={550}
