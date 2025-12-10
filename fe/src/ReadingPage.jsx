@@ -22,11 +22,6 @@ const Page = forwardRef(({ pageNumber, imageUrl, isCover, isBlank }, ref) => {
           <div className="loading">Loading page {pageNumber}...</div>
         )}
       </div>
-      {!isCover && (
-        <div className="page-footer">
-          <span className="page-number">{pageNumber}</span>
-        </div>
-      )}
     </div>
   );
 });
@@ -122,6 +117,18 @@ function ReadingPage() {
     }
   };
 
+  const goToFirstPage = () => {
+    if (bookRef.current) {
+      bookRef.current.pageFlip().turnToPage(0);
+    }
+  };
+
+  const goToLastPage = () => {
+    if (bookRef.current) {
+      bookRef.current.pageFlip().turnToPage(totalPages - 1);
+    }
+  };
+
   const getPageDisplay = () => {
     if (currentPage === 0) {
       return `1 / ${totalPages}`;
@@ -155,16 +162,16 @@ function ReadingPage() {
 
   return (
     <div className="reading-page">
-      <div className="book-container" style={{ width: '60%', margin: '0 auto' }}>
+      <div className="book-container" style={{ width: '50%', margin: '0 auto' }}>
         <HTMLFlipBook
           ref={bookRef}
-          width={550}
-          height={733}
+          width={450}
+          height={600}
           size="stretch"
           minWidth={315}
-          maxWidth={1000}
+          maxWidth={800}
           minHeight={400}
-          maxHeight={1533}
+          maxHeight={1200}
           maxShadowOpacity={0.5}
           showCover={true}
           mobileScrollSupport={true}
@@ -211,6 +218,9 @@ function ReadingPage() {
       </div>
       
       <div className="controls">
+        <button onClick={goToFirstPage} disabled={currentPage === 0}>
+          First
+        </button>
         <button onClick={goToPrevPage} disabled={currentPage === 0}>
           Previous
         </button>
@@ -219,6 +229,9 @@ function ReadingPage() {
         </span>
         <button onClick={goToNextPage} disabled={currentPage >= totalPages - 1}>
           Next
+        </button>
+        <button onClick={goToLastPage} disabled={currentPage >= totalPages - 1}>
+          Last
         </button>
       </div>
     </div>

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Fredoka:wght@400;500;600&family=Comic+Neue:wght@400;700&display=swap');
+
 .reading-page {
   width: 100%;
   min-height: 100vh;
@@ -6,7 +8,8 @@
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: #e5e5e5;
+  background: #fffacd;
+  font-family: 'Fredoka', sans-serif;
 }
 
 .book-container {
@@ -20,7 +23,7 @@
 }
 
 .flip-book {
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
 .page {
@@ -28,18 +31,18 @@
   display: flex;
   flex-direction: column;
   padding: 20px;
-  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
   position: relative;
 }
 
 .cover-page {
-  background-color: #fff;
+  background: #fff;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 40px;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
 .cover-page .page-content {
@@ -58,7 +61,7 @@
 
 .blank-page {
   background-color: #fff;
-  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
 }
 
 .page-content {
@@ -90,30 +93,33 @@
 .controls {
   display: flex;
   align-items: center;
-  gap: 2rem;
-  margin-bottom: 1rem;
+  gap: 1rem;
+  margin-top: 2rem;
   background: white;
-  padding: 1rem 2rem;
+  padding: 0.5rem 1rem;
   border-radius: 50px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  font-family: 'Fredoka', sans-serif;
 }
 
 .controls button {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
   font-weight: 600;
   border: none;
-  border-radius: 25px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  border-radius: 30px;
+  background: #ffd966;
+  color: #333;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+  font-family: 'Bubblegum Sans', cursive;
 }
 
 .controls button:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
+  background: #ffcc33;
 }
 
 .controls button:active:not(:disabled) {
@@ -121,17 +127,19 @@
 }
 
 .controls button:disabled {
-  background: #ccc;
+  background: #e0e0e0;
   cursor: not-allowed;
-  opacity: 0.6;
+  opacity: 0.5;
+  box-shadow: none;
 }
 
 .page-info {
-  font-size: 1rem;
-  font-weight: 500;
+  font-size: 0.9rem;
+  font-weight: 600;
   color: #333;
-  min-width: 120px;
+  min-width: 80px;
   text-align: center;
+  font-family: 'Comic Neue', cursive;
 }
 
 .page-selector {
@@ -171,15 +179,16 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: #e5e5e5;
+  background: #fffacd;
   color: #333;
+  font-family: 'Fredoka', sans-serif;
 }
 
 .loading-container .spinner {
-  width: 50px;
-  height: 50px;
-  border: 5px solid rgba(102, 126, 234, 0.3);
-  border-top-color: #667eea;
+  width: 60px;
+  height: 60px;
+  border: 6px solid rgba(255, 217, 102, 0.3);
+  border-top-color: #ffd966;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
@@ -189,39 +198,44 @@
   to {
     transform: rotate(360deg);
   }
-}
-
 .loading-container p {
-  font-size: 1.2rem;
-  font-weight: 500;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #333;
+  font-family: 'Bubblegum Sans', cursive;
 }
 
 .error-container h2 {
-  font-size: 2rem;
+  font-size: 2.5rem;
   margin-bottom: 1rem;
+  font-family: 'Bubblegum Sans', cursive;
+  color: #333;
 }
 
 .error-container p {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   margin-bottom: 1.5rem;
   color: #666;
 }
 
 .error-container button {
-  padding: 0.75rem 2rem;
-  font-size: 1rem;
+  padding: 0.85rem 2.5rem;
+  font-size: 1.1rem;
   font-weight: 600;
-  border: 2px solid #667eea;
-  border-radius: 25px;
-  background: #667eea;
-  color: white;
+  border: none;
+  border-radius: 30px;
+  background: #ffd966;
+  color: #333;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-family: 'Bubblegum Sans', cursive;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
 }
 
 .error-container button:hover {
-  background: #764ba2;
-  border-color: #764ba2;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
+  background: #ffcc33;
 }
 
 .loading {
@@ -231,6 +245,9 @@
   width: 100%;
   height: 100%;
   color: #666;
+  font-style: italic;
+  font-family: 'Comic Neue', cursive;
+} color: #666;
   font-style: italic;
 }
 
