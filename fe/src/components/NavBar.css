@@ -1,0 +1,200 @@
+.navbar {
+  background-color: #333;
+  padding: 16px;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Segoe UI', sans-serif;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.navbar-left,
+.navbar-right {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.navbar-link {
+  color: white;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: color 0.3s, transform 0.2s;
+}
+
+.navbar-link:hover {
+  color: #007bff;
+  transform: scale(1.05);
+}
+
+.search-form {
+  display: flex;
+  align-items: center;
+}
+
+.search-input {
+  padding: 10px;
+  border-radius: 20px;
+  border: 1px solid #555;
+  margin-right: 8px;
+  background-color: #444;
+  color: white;
+  transition: border-color 0.3s;
+}
+
+.search-input:focus {
+  border-color: #007bff;
+}
+
+.search-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.search-button:hover {
+  transform: scale(1.1);
+}
+
+.notifications-container {
+  position: relative;
+}
+
+.icon {
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.icon:hover {
+  color: #007bff;
+}
+
+.notifications-dropdown {
+  position: absolute;
+  right: 0;
+  top: 30px;
+  background: #444;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  z-index: 1001;
+  animation: fadeIn 0.3s;
+}
+
+.user-avatar {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.user-avatar:hover {
+  transform: scale(1.05);
+}
+
+.user-email {
+  margin-left: 8px;
+}
+
+.hamburger-icon {
+  display: none;
+  cursor: pointer;
+  color: white;
+  transition: color 0.3s;
+}
+
+.hamburger-icon:hover {
+  color: #007bff;
+}
+
+.menu {
+  display: flex;
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: row; /* Giữ row, nhưng navbar-left sẽ handle menu */
+    padding: 12px;
+  }
+
+  .hamburger-icon {
+    display: block; /* Hiện hamburger trên mobile */
+  }
+
+  .menu {
+    display: none; /* Ẩn menu mặc định trên mobile */
+  }
+
+  .menu.open {
+    display: flex;
+    flex-direction: column; /* Stack vertical */
+    position: absolute;
+    top: 60px; /* Dưới navbar */
+    left: 0;
+    width: 100%;
+    background-color: #333;
+    padding: 16px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    z-index: 999;
+    animation: slideDown 0.3s ease-in-out; /* Animation slide down */
+  }
+
+  .navbar-left {
+    align-items: center;
+  }
+
+  .navbar-right {
+    gap: 12px;
+  }
+
+  .search-input {
+    width: auto; /* Linh hoạt hơn */
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.navbar.dark {
+  background-color: #1e1e1e; /* Nền tối hơn */
+}
+
+.navbar.dark .navbar-link {
+  color: #e0e0e0; /* Text sáng */
+}
+
+.navbar.dark .navbar-link:hover {
+  color: #4a90e2; /* Accent dark */
+}
+
+.navbar.dark .search-input {
+  background-color: #333;
+  border-color: #555;
+  color: #e0e0e0;
+}
+
+.navbar.dark .notifications-dropdown {
+  background: #333;
+}
+
+.navbar.dark .menu.open {
+  background-color: #1e1e1e;
+}
