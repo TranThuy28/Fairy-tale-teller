@@ -1,16 +1,37 @@
-import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import MainPage from "./MainPage"; // Importing the file we just created
-import ReadingPage from "./ReadingPage";
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import { StoriesProvider } from './context/StoriesContext';
+import { ThemeProvider } from './context/ThemeContext'; 
+import NavBar from './components/NavBar';
+import MainPage from './MainPage'; 
+import SignUp from './pages/SignUp';
+import SignIn from './pages/SignIn';
+import ReadStories from './pages/ReadStories';
+import UnreadStories from './pages/UnreadStories';
+import StoryDetail from './pages/StoryDetail';
+import Donate from './pages/Donate'; 
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<MainPage/>} />
-        <Route path="/reading" element={<ReadingPage />} />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <StoriesProvider>
+        <ThemeProvider> 
+          <Router>
+            <NavBar />
+            <Routes>
+              <Route path="/" element={<MainPage />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/signin" element={<SignIn />} />
+              <Route path="/read-stories" element={<ReadStories />} />
+              <Route path="/unread-stories" element={<UnreadStories />} />
+              <Route path="/story/:id" element={<StoryDetail />} />
+              <Route path="/donate" element={<Donate />} /> 
+            </Routes>
+          </Router>
+        </ThemeProvider>
+      </StoriesProvider>
+    </AuthProvider>
   );
 }
 

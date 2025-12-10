@@ -12,4 +12,71 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #b2b2b2;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+.dark-bg {
+  background-color: #333;
+  color: white;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 600px) {
+  body { font-size: 0.95rem; }
+  input, button { font-size: 0.95rem; }
+}
+
+body.light {
+  background-color: #f0f0f0;
+  color: #333;
+}
+/* Styles cho dark mode */
+body.dark {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+.dark form, .dark .form-container {
+  background-color: #1e1e1e !important; 
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3) !important;
+}
+
+.dark label {
+  color: #bbb !important; 
+}
+
+.dark input {
+  background-color: #333 !important;
+  color: #e0e0e0 !important;
+  border-color: #555 !important;
+}
+
+.dark button {
+  background-color: #4a90e2 !important; 
+  color: white !important;
+}
+
+.dark button:hover {
+  background-color: #357abd !important;
+}
+
+.dark h2, .dark p {
+  color: #e0e0e0 !important; 
+}
+
+.dark a {
+  color: #4a90e2 !important; 
+}
+
+.dark a:hover {
+  color: #357abd !important;
+}
+
+body, form, input, button, h2, p, a {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
