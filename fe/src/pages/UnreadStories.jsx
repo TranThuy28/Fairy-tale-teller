@@ -7,7 +7,7 @@ const UnreadStories = () => {
 
   return (
     <div style={{ padding: '32px', maxWidth: '1200px', margin: '0 auto', backgroundColor: '#f0f0f0' }}>
-      <h2 style={{ textAlign: 'center', marginBottom: '24px', fontSize: '2rem', color: '#333' }}>Truyện Chưa Đọc</h2>
+      <h2 style={{ textAlign: 'center', marginBottom: '24px', fontSize: '2rem', color: '#333' }}>Chưa Đọc</h2>
       {filteredStories.length === 0 ? (
         <div style={{ textAlign: 'center', color: '#666', fontSize: '1.2rem', padding: '40px', background: 'white', borderRadius: '12px', boxShadow: '0 4px 8px rgba(0,0,0,0.1)' }}>
           <p>Bạn đã đọc hết truyện.</p>

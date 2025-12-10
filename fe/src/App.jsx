@@ -11,7 +11,7 @@ import ReadStories from './pages/ReadStories';
 import UnreadStories from './pages/UnreadStories';
 import StoryDetail from './pages/StoryDetail';
 import Donate from './pages/Donate'; 
-
+import ReadingPage from './ReadingPage';
 function App() {
   return (
     <AuthProvider>
@@ -27,6 +27,8 @@ function App() {
               <Route path="/unread-stories" element={<UnreadStories />} />
               <Route path="/story/:id" element={<StoryDetail />} />
               <Route path="/donate" element={<Donate />} /> 
+              <Route path="/reading" element={<ReadingPage />} /> 
+
             </Routes>
           </Router>
         </ThemeProvider>
