@@ -30,3 +30,6 @@ requests==2.32.3
 
 # Optional NLP helpers
 rapidfuzz==3.7.0
+
+# SQLModel / Database
+sqlmodel==0.0.27
