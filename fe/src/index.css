@@ -1,7 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 * {
   margin: 0;
   padding: 0;
@@ -13,89 +12,71 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #b2b2b2;
 }
 
-/* Custom radial gradient utility */
-.bg-gradient-radial {
-  background: radial-gradient(circle, var(--tw-gradient-stops));
+button:hover {
+  opacity: 0.9;
+}
+.dark-bg {
+  background-color: #333;
+  color: white;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 600px) {
+  body { font-size: 0.95rem; }
+  input, button { font-size: 0.95rem; }
 }
 
-/* React-PDF styles - Critical for canvas visibility */
-.react-pdf__Page {
-  display: block !important;
-  width: 100% !important;
-  height: 100% !important;
-  position: relative;
+body.light {
+  background-color: #f0f0f0;
+  color: #333;
+}
+/* Styles cho dark mode */
+body.dark {
+  background-color: #121212;
+  color: #e0e0e0;
 }
 
-.react-pdf__Page__canvas {
-  display: block !important;
-  width: 100% !important;
-  height: 100% !important;
-  max-width: 100% !important;
-  max-height: 100% !important;
-  object-fit: contain;
-  margin: 0 auto;
+.dark form, .dark .form-container {
+  background-color: #1e1e1e !important; 
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3) !important;
 }
 
-/* Karaoke highlight */
-.highlight {
-  background: rgba(251, 191, 36, 0.25);
-  color: #fbbf24;
-  padding: 0 6px;
-  border-radius: 6px;
-  font-weight: 700;
-  box-shadow: 0 0 12px rgba(251, 191, 36, 0.35);
+.dark label {
+  color: #bbb !important; 
 }
 
-/* Annotation and Text Layer styles for react-pdf */
-.react-pdf__Page__annotations {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
+.dark input {
+  background-color: #333 !important;
+  color: #e0e0e0 !important;
+  border-color: #555 !important;
 }
 
-.react-pdf__Page__textContent {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  opacity: 0.2;
-  line-height: 1;
+.dark button {
+  background-color: #4a90e2 !important; 
+  color: white !important;
 }
 
-.react-pdf__Page__textContent span {
-  color: transparent;
-  position: absolute;
-  white-space: pre;
-  cursor: text;
-  transform-origin: 0% 0%;
+.dark button:hover {
+  background-color: #357abd !important;
 }
 
-.react-pdf__Page__annotations .annotationLayer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+.dark h2, .dark p {
+  color: #e0e0e0 !important; 
 }
 
-/* FlipBook custom styles */
-.flipbook-container {
-  margin: 0 auto;
+.dark a {
+  color: #4a90e2 !important; 
 }
 
-.flipbook-container .page {
-  background-color: #fef3c7;
-  border: 1px solid rgba(139, 69, 19, 0.3);
-  overflow: hidden;
+.dark a:hover {
+  color: #357abd !important;
 }
 
-.flipbook-container .page-shadow {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+body, form, input, button, h2, p, a {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }

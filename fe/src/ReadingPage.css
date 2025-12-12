@@ -1,0 +1,271 @@
+@import url('https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Fredoka:wght@400;500;600&family=Comic+Neue:wght@400;700&display=swap');
+
+.reading-page {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: #fffacd;
+  font-family: 'Fredoka', sans-serif;
+}
+
+.book-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2rem;
+  perspective: 1500px;
+  width: 100%;
+  min-width: 1200px;
+}
+
+.flip-book {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.page {
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+.cover-page {
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.cover-page .page-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.cover-page .page-content img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.blank-page {
+  background-color: #fff;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
+}
+
+.page-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.page-content img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.page-footer {
+  text-align: center;
+  padding-top: 10px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.page-number {
+  color: #666;
+  font-size: 0.9rem;
+  font-family: Georgia, serif;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  background: white;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  font-family: 'Fredoka', sans-serif;
+}
+
+.controls button {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 30px;
+  background: #ffd966;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+  font-family: 'Bubblegum Sans', cursive;
+}
+
+.controls button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
+  background: #ffcc33;
+}
+
+.controls button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.controls button:disabled {
+  background: #e0e0e0;
+  cursor: not-allowed;
+  opacity: 0.5;
+  box-shadow: none;
+}
+
+.page-info {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+  min-width: 80px;
+  text-align: center;
+  font-family: 'Comic Neue', cursive;
+}
+
+.page-selector {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.page-selector label {
+  font-weight: 600;
+  color: #333;
+}
+
+.page-selector select {
+  padding: 0.5rem 1rem;
+  border: 2px solid #667eea;
+  border-radius: 15px;
+  font-size: 1rem;
+  cursor: pointer;
+  background: white;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.page-selector select:focus {
+  border-color: #764ba2;
+}
+
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #fffacd;
+  color: #333;
+  font-family: 'Fredoka', sans-serif;
+}
+
+.loading-container .spinner {
+  width: 60px;
+  height: 60px;
+  border: 6px solid rgba(255, 217, 102, 0.3);
+  border-top-color: #ffd966;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+.loading-container p {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #333;
+  font-family: 'Bubblegum Sans', cursive;
+}
+
+.error-container h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  font-family: 'Bubblegum Sans', cursive;
+  color: #333;
+}
+
+.error-container p {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  color: #666;
+}
+
+.error-container button {
+  padding: 0.85rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 30px;
+  background: #ffd966;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Bubblegum Sans', cursive;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.error-container button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
+  background: #ffcc33;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: #666;
+  font-style: italic;
+  font-family: 'Comic Neue', cursive;
+} color: #666;
+  font-style: italic;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .reading-page {
+    padding: 1rem;
+  }
+
+  .controls {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .page-selector {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+}

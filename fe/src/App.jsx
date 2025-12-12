@@ -1,21 +1,39 @@
-import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import LibraryView from "./components/LibraryView";
-import FlipBookViewer from "./components/FlipBookViewer";
-import ChatOverlay from "./components/ChatOverlay";
-
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import { StoriesProvider } from './context/StoriesContext';
+import { ThemeProvider } from './context/ThemeContext'; 
+import NavBar from './components/NavBar';
+import MainPage from './MainPage'; 
+import SignUp from './pages/SignUp';
+import SignIn from './pages/SignIn';
+import ReadStories from './pages/ReadStories';
+import UnreadStories from './pages/UnreadStories';
+import StoryDetail from './pages/StoryDetail';
+import Donate from './pages/Donate'; 
+import ReadingPage from './ReadingPage';
 function App() {
   return (
-    <BrowserRouter>
-      <div className="relative">
-        <Routes>
-          <Route path="/" element={<LibraryView />} />
-          <Route path="/read/:filename" element={<FlipBookViewer />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-        <ChatOverlay />
-      </div>
-    </BrowserRouter>
+    <AuthProvider>
+      <StoriesProvider>
+        <ThemeProvider> 
+          <Router>
+            <NavBar />
+            <Routes>
+              <Route path="/" element={<MainPage />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/signin" element={<SignIn />} />
+              <Route path="/read-stories" element={<ReadStories />} />
+              <Route path="/unread-stories" element={<UnreadStories />} />
+              <Route path="/story/:id" element={<StoryDetail />} />
+              <Route path="/donate" element={<Donate />} /> 
+              <Route path="/reading" element={<ReadingPage />} /> 
+
+            </Routes>
+          </Router>
+        </ThemeProvider>
+      </StoriesProvider>
+    </AuthProvider>
   );
 }
 
