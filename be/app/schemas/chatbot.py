@@ -15,3 +15,12 @@ class WordExplainResponse(BaseModel):
 
 class TTSRequest(BaseModel):
     text: str
+
+
+class AskRequest(BaseModel):
+    question: str
+    current_story: Optional[str] = None
+
+
+class AskResponse(BaseModel):
+    answer: str

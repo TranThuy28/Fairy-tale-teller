@@ -30,3 +30,9 @@ requests==2.32.3
 
 # Optional NLP helpers
 rapidfuzz==3.7.0
+
+# PDF text extraction
+pdfplumber==0.11.4
+
+# RAG / embeddings
+tiktoken==0.7.0
