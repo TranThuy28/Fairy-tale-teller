@@ -1,7 +1,14 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Document, Page, pdfjs } from "react-pdf";
 import HTMLFlipBook from "react-pageflip";
+
+// Suppress noisy pdf.js warnings
+const consoleWarn = console.warn;
+console.warn = (...args) => {
+  if (args[0] && typeof args[0] === "string" && args[0].includes("getOperatorList")) return;
+  consoleWarn(...args);
+};
 
 // Set up PDF.js worker - use local worker file compatible with Vite
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -73,6 +80,9 @@ function FlipBookViewer() {
   const handlePageFlip = (e) => {
     stopAudio();
     setCurrentPage(e.data);
+    const visible = getVisiblePages(e.data, numPages);
+    console.log(`📖 Flip Detected. Index: ${e.data} -> Reading Spread: ${visible}`);
+    fetchSegmentsForVisiblePages(visible);
   };
 
   const stopAudio = () => {
@@ -117,26 +127,60 @@ function FlipBookViewer() {
     }
   };
 
-  const fetchSegmentsForPage = async (pageIndex) => {
-    if (!filename || pageIndex == null) return;
+  // 1. LOGIC: Calculate EXACT PDF Page Numbers (1-based)
+  // Index 0 (Cover) -> PDF Page 1
+  // Index 1 (Left)  -> PDF Page 2
+  // Index 2 (Right) -> PDF Page 3
+  const getVisiblePages = useCallback((currentIndex, total) => {
+    if (currentIndex == null || total == null) return [];
+
+    // CASE 0: Cover
+    if (currentIndex === 0) return [1];
+
+    // CASE SPREAD
+    // Formula: Start from Page 2, add 2 for every spread block.
+    const spreadBlock = Math.floor((currentIndex - 1) / 2);
+    const leftPdfPage = 2 + spreadBlock * 2;
+    const rightPdfPage = leftPdfPage + 1;
+
+    const visiblePages = [leftPdfPage, rightPdfPage];
+
+    // Filter: Page must be <= Total Pages
+    return visiblePages.filter((p) => p > 0 && p <= total);
+  }, []);
+
+  // 2. LOGIC: Fetch Text (DO NOT ADD +1 HERE)
+  const fetchSegmentsForVisiblePages = async (visiblePages) => {
+    if (!filename || !visiblePages || visiblePages.length === 0) return;
     try {
       const encodedFilename = encodeURIComponent(filename);
-      const textRes = await fetch(
-        `${API_BASE_URL}/stories/${encodedFilename}/text?page=${pageIndex}`
-      );
+      const combined = [];
 
-      if (!textRes.ok) {
-        console.warn("Failed to fetch page text", textRes.statusText);
-        setSegments([]);
-        return;
+      for (const p of visiblePages) {
+        // p is already the correct PDF page number (1-based from getVisiblePages)
+        console.log(`📡 Fetching Text for PDF Page: ${p}`);
+        const apiPage = p - 1; // backend expects zero-based
+        if (apiPage < 0) continue;
+
+        const textRes = await fetch(
+          `${API_BASE_URL}/stories/${encodedFilename}/text?page=${apiPage}`
+        );
+
+        if (!textRes.ok) {
+          console.warn("Failed to fetch page text", textRes.statusText);
+          continue;
+        }
+
+        const { segments: segs = [] } = await textRes.json();
+        combined.push(...segs);
       }
 
-      const { segments: segs = [] } = await textRes.json();
-      setSegments(segs);
+      setSegments(combined);
       setCurrentSegmentIndex(0);
 
-      if (isAutoReading && segs.length > 0) {
-        await playSegment(segs[0]);
+      // Auto-play first segment if enabled
+      if (isAutoReading && combined.length > 0) {
+        await playSegment(combined[0]);
       }
     } catch (err) {
       console.error("Fetch segments failed:", err);
@@ -148,7 +192,8 @@ function FlipBookViewer() {
   useEffect(() => {
     if (!pdfUrl || numPages == null) return;
     stopAudio();
-    fetchSegmentsForPage(currentPage);
+    const visible = getVisiblePages(currentPage, numPages);
+    fetchSegmentsForVisiblePages(visible);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, isAutoReading, pdfUrl, numPages]);
 
@@ -191,6 +236,13 @@ function FlipBookViewer() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-900 via-amber-800 to-amber-950 py-8 px-4">
+      {/* DEBUG BAR - remove when stable */}
+      <div className="fixed top-0 left-0 z-[9999] bg-black/80 text-green-400 p-2 font-mono text-sm max-w-md pointer-events-none">
+        <p>Flip Index: {currentPage}</p>
+        <p>Đang gọi PDF Page: {JSON.stringify(getVisiblePages(currentPage, numPages))}</p>
+        <p>File: {filename}</p>
+      </div>
+
       {/* Back Button */}
       <button
         onClick={() => navigate("/")}

@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect, forwardRef } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import HTMLFlipBook from 'react-pageflip';
 import * as pdfjsLib from 'pdfjs-dist';
 import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import './ReadingPage.css';
 import pageTurnSound from '/assets/page-turn.mp3';
+const API_BASE = 'http://127.0.0.1:8000/api';
 // Configure PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
@@ -29,24 +31,54 @@ const Page = forwardRef(({ pageNumber, imageUrl, isCover, isBlank }, ref) => {
 Page.displayName = 'Page';
 
 function ReadingPage() {
+  const { filename } = useParams();
+  const navigate = useNavigate();
   const [pages, setPages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [isReading, setIsReading] = useState(false);
+  const [pdfFile, setPdfFile] = useState(null);
+  const [chatInput, setChatInput] = useState('');
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatLoading, setChatLoading] = useState(false);
   const bookRef = useRef();
   const audioRef = useRef(null);
+  const ttsRef = useRef(null);
   useEffect(() => {
-    loadPDF();
+    init();
     audioRef.current = new Audio(pageTurnSound);
     audioRef.current.volume = 0.5;
-  }, []);
+  }, [filename]);
 
-  const loadPDF = async () => {
+  const init = async () => {
+    try {
+      let target = filename;
+      if (!target) {
+        // Fetch first pdf from backend
+        const res = await fetch(`${API_BASE}/stories`);
+        const data = await res.json();
+        if (!data || data.length === 0) {
+          setError('Không tìm thấy truyện nào từ backend.');
+          setLoading(false);
+          return;
+        }
+        target = data[0];
+      }
+      const encoded = encodeURIComponent(target);
+      const url = `${API_BASE}/stories/${encoded}`;
+      setPdfFile(url);
+      await loadPDF(url);
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
+  const loadPDF = async (pdfPath) => {
     try {
       setLoading(true);
-      const pdfPath = '/assets/Little-Prince-final-text.pdf';
-      
       // Load the PDF
       const loadingTask = pdfjsLib.getDocument(pdfPath);
       const pdf = await loadingTask.promise;
@@ -85,6 +117,111 @@ function ReadingPage() {
     }
   };
 
+  const stopTTS = () => {
+    if (ttsRef.current) {
+      ttsRef.current.pause();
+      ttsRef.current.currentTime = 0;
+      URL.revokeObjectURL(ttsRef.current.src);
+      ttsRef.current = null;
+    }
+    setIsReading(false);
+  };
+
+  const readCurrentPage = async () => {
+    if (!pdfFile) return;
+    stopTTS();
+    setIsReading(true);
+    try {
+      const encoded = encodeURIComponent(filename || pdfFile.split('/').pop());
+      // đọc cả spread: trang trái (currentPage) và trang phải (currentPage+1 nếu có)
+      const pageIndexes = [currentPage, currentPage + 1].filter(
+        (p) => p >= 0 && p < totalPages
+      );
+
+      const allSegments = [];
+      for (const p of pageIndexes) {
+        const textRes = await fetch(`${API_BASE}/stories/${encoded}/text?page=${p}`);
+        if (!textRes.ok) continue;
+        const { segments = [] } = await textRes.json();
+        allSegments.push(...segments);
+      }
+
+      const text = allSegments.join(' ');
+      if (!text || text.length < 2) {
+        throw new Error('Trang trống hoặc chỉ có hình ảnh.');
+      }
+      const ttsRes = await fetch(`${API_BASE}/chatbot/tts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+      if (!ttsRes.ok) {
+        throw new Error('TTS backend lỗi.');
+      }
+      const blob = await ttsRes.blob();
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      audio.volume = 1.0;
+      audio.onended = () => setIsReading(false);
+      audio.onerror = (e) => {
+        console.error('Audio playback error', e);
+        setIsReading(false);
+      };
+      ttsRef.current = audio;
+      try {
+        await audio.play();
+      } catch (e) {
+        console.error('Audio play() failed', e);
+        setChatMessages((prev) => [...prev, { sender: 'bot', text: 'Không phát được audio TTS (trình duyệt chặn?).' }]);
+        setIsReading(false);
+      }
+    } catch (err) {
+      setChatMessages((prev) => [...prev, { sender: 'bot', text: err.message }]);
+      setIsReading(false);
+    }
+  };
+
+  const sendChat = async () => {
+    if (!chatInput.trim()) return;
+    const q = chatInput.trim();
+    setChatInput('');
+    setChatMessages((prev) => [...prev, { sender: 'user', text: q }]);
+    setChatLoading(true);
+    stopTTS();
+    try {
+      const res = await fetch(`${API_BASE}/chatbot/ask`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: q }),
+      });
+      const data = await res.json();
+      const answer = data.answer || 'Cô chưa đọc đến đoạn đó, chúng mình cùng đọc tiếp nhé!';
+      setChatMessages((prev) => [...prev, { sender: 'bot', text: answer }]);
+
+      // Auto TTS
+      try {
+        const ttsRes = await fetch(`${API_BASE}/chatbot/tts`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: answer }),
+        });
+        if (ttsRes.ok) {
+          const blob = await ttsRes.blob();
+          const url = URL.createObjectURL(blob);
+          const audio = new Audio(url);
+          ttsRef.current = audio;
+          audio.play();
+        }
+      } catch (e) {
+        // ignore
+      }
+    } catch (err) {
+      setChatMessages((prev) => [...prev, { sender: 'bot', text: 'Có lỗi, thử lại sau nhé!' }]);
+    } finally {
+      setChatLoading(false);
+    }
+  };
+
   const playPageTurnSound = () => {
       if (audioRef.current) {
         audioRef.current.currentTime = 0; // Reset to start
@@ -95,18 +232,21 @@ function ReadingPage() {
     };
 
   const onFlip = (e) => {
+    stopTTS();
     setCurrentPage(e.data);
     playPageTurnSound();
   };
 
   const goToNextPage = () => {
     if (bookRef.current) {
+      stopTTS();
       bookRef.current.pageFlip().flipNext();
     }
   };
 
   const goToPrevPage = () => {
     if (bookRef.current) {
+      stopTTS();
       bookRef.current.pageFlip().flipPrev();
     }
   };
@@ -155,7 +295,7 @@ function ReadingPage() {
       <div className="reading-page error-container">
         <h2>Error Loading PDF</h2>
         <p>{error}</p>
-        <button onClick={loadPDF}>Retry</button>
+        <button onClick={() => init()}>Retry</button>
       </div>
     );
   }
@@ -215,6 +355,32 @@ function ReadingPage() {
             }
           })}
         </HTMLFlipBook>
+      </div>
+      
+      {/* Chat with Linda (RAG) */}
+      <div className="chat-panel">
+        <h3>Hỏi cô Linda về trang này</h3>
+        <button className="read-btn" onClick={readCurrentPage} disabled={isReading}>
+          {isReading ? 'Đang đọc...' : 'Đọc to trang hiện tại (TTS)'}
+        </button>
+        <div className="chat-messages">
+          {chatMessages.map((m, idx) => (
+            <div key={idx} className={`chat-msg ${m.sender === 'user' ? 'user' : 'bot'}`}>
+              {m.text}
+            </div>
+          ))}
+        </div>
+        <div className="chat-input">
+          <input
+            value={chatInput}
+            onChange={(e) => setChatInput(e.target.value)}
+            placeholder="Nhập câu hỏi..."
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') sendChat();
+            }}
+          />
+          <button onClick={sendChat} disabled={chatLoading}>Gửi</button>
+        </div>
       </div>
       
       <div className="controls">
