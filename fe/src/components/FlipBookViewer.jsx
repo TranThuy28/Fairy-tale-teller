@@ -30,8 +30,11 @@ function FlipBookViewer() {
   const [segments, setSegments] = useState([]);
   const [currentSegmentIndex, setCurrentSegmentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [showPlayButton, setShowPlayButton] = useState(false);
   const audioRef = useRef(null);
+  const placeholderRef = useRef(null);
   const flipBookRef = useRef(null);
+  const queueCancelRef = useRef(false);
 
   useEffect(() => {
     if (filename) {
@@ -63,9 +66,20 @@ function FlipBookViewer() {
     setLoading(false);
   };
 
+  const primePlaceholder = () => {
+    try {
+      const placeholder = new Audio();
+      placeholderRef.current = placeholder;
+      placeholder.play().catch(() => {});
+    } catch (err) {
+      // ignore
+    }
+  };
+
   const goToPrevPage = () => {
     if (flipBookRef.current) {
       stopAudio();
+      primePlaceholder();
       flipBookRef.current.pageFlip().flipPrev();
     }
   };
@@ -73,12 +87,14 @@ function FlipBookViewer() {
   const goToNextPage = () => {
     if (flipBookRef.current) {
       stopAudio();
+      primePlaceholder();
       flipBookRef.current.pageFlip().flipNext();
     }
   };
 
   const handlePageFlip = (e) => {
     stopAudio();
+    primePlaceholder();
     setCurrentPage(e.data);
     const visible = getVisiblePages(e.data, numPages);
     console.log(`📖 Flip Detected. Index: ${e.data} -> Reading Spread: ${visible}`);
@@ -95,12 +111,27 @@ function FlipBookViewer() {
     }
   };
 
+  const stopAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      URL.revokeObjectURL(audioRef.current.src);
+      audioRef.current = null;
+      setIsPlaying(false);
+    }
+    // Clear any queued playback
+    queueCancelRef.current = true;
+    setShowPlayButton(false);
+  };
+
+  // Multi-segment audio queue using /tts (now returns JSON list)
   const playSegment = async (segmentText) => {
     if (!segmentText || segmentText.trim().length < 2) {
       return;
     }
     try {
       stopAudio();
+      queueCancelRef.current = false;
       const ttsRes = await fetch(`${API_BASE_URL}/chatbot/tts`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -112,16 +143,45 @@ function FlipBookViewer() {
         return;
       }
 
-      const audioBlob = await ttsRes.blob();
-      const audioUrl = URL.createObjectURL(audioBlob);
-      const audio = new Audio(audioUrl);
-      audioRef.current = audio;
-      setIsPlaying(true);
-      audio.onended = () => {
-        setIsPlaying(false);
-        setCurrentSegmentIndex((prev) => prev + 1);
+      const segmentsAudio = await ttsRes.json(); // [{audio, text, speaker, voice}]
+      if (!Array.isArray(segmentsAudio) || segmentsAudio.length === 0) return;
+
+      let idx = 0;
+      const playNext = () => {
+        if (queueCancelRef.current) {
+          setIsPlaying(false);
+          return;
+        }
+        if (idx >= segmentsAudio.length) {
+          setIsPlaying(false);
+          // advance highlight after finishing the set
+          setCurrentSegmentIndex((prev) => prev + 1);
+          return;
+        }
+        const seg = segmentsAudio[idx];
+        const audioSrc = `data:audio/mp3;base64,${seg.audio}`;
+        const audio = placeholderRef.current || new Audio();
+        audio.src = audioSrc;
+        audioRef.current = audio;
+        setIsPlaying(true);
+        audio.onended = () => {
+          idx += 1;
+          playNext();
+        };
+        audio.play().catch((err) => {
+          console.log("Audio play blocked, showing overlay", err);
+          if (err && err.name === "NotAllowedError") {
+            setShowPlayButton(true);
+            console.log("Autoplay blocked. Showing Overlay:", true);
+            // Do not advance idx; wait for user to resume
+            return;
+          }
+          idx += 1;
+          playNext();
+        });
       };
-      await audio.play();
+
+      playNext();
     } catch (err) {
       console.error("Segment play failed:", err);
     }
@@ -236,6 +296,30 @@ function FlipBookViewer() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-900 via-amber-800 to-amber-950 py-8 px-4">
+      {/* AUDIO RESUME OVERLAY - Must be outside FlipBook to be visible */}
+      {showPlayButton && (
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="text-center animate-bounce">
+            <p className="text-white text-2xl font-bold mb-4 font-serif">✨ Audio is Ready! ✨</p>
+            <button
+              onClick={() => {
+                setShowPlayButton(false);
+                if (audioRef.current) {
+                  audioRef.current.play().catch((err) => {
+                    console.error("Resume audio failed", err);
+                  });
+                }
+              }}
+              className="bg-amber-500 hover:bg-amber-400 text-white font-bold py-4 px-10 rounded-full shadow-[0_0_50px_rgba(245,158,11,0.8)] text-xl border-4 border-amber-300 transition-transform transform hover:scale-110"
+            >
+              ▶ TAP TO LISTEN
+            </button>
+          </div>
+        </div>
+      )}
       {/* DEBUG BAR - remove when stable */}
       <div className="fixed top-0 left-0 z-[9999] bg-black/80 text-green-400 p-2 font-mono text-sm max-w-md pointer-events-none">
         <p>Flip Index: {currentPage}</p>

@@ -50,6 +50,7 @@ function ReadingPage() {
   const [chatLoading, setChatLoading] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(true);
   const [isRecording, setIsRecording] = useState(false);
+  const [showResumeOverlay, setShowResumeOverlay] = useState(false);
   const bookRef = useRef();
   const audioRef = useRef(null);
   const ttsRef = useRef(null);
@@ -191,7 +192,8 @@ function ReadingPage() {
 
       const allSegments = [];
       for (const p of pageIndexes) {
-        const textRes = await fetch(`${API_BASE}/stories/${encoded}/text?page=${p}`);
+        const adjusted = Math.max(0, p - 1); // shift back by 1, backend is zero-based
+        const textRes = await fetch(`${API_BASE}/stories/${encoded}/text?page=${adjusted}`);
         if (!textRes.ok) continue;
         const { segments = [] } = await textRes.json();
         allSegments.push(...segments);
@@ -209,23 +211,41 @@ function ReadingPage() {
       if (!ttsRes.ok) {
         throw new Error('TTS backend lỗi.');
       }
-      const blob = await ttsRes.blob();
-      const url = URL.createObjectURL(blob);
-      const audio = new Audio(url);
-      audio.volume = 1.0;
-      audio.onended = () => setIsReading(false);
-      audio.onerror = (e) => {
-        console.error('Audio playback error', e);
+      const segmentsAudio = await ttsRes.json(); // [{audio, text, speaker, voice}]
+      if (!Array.isArray(segmentsAudio) || segmentsAudio.length === 0) {
         setIsReading(false);
-      };
-      ttsRef.current = audio;
-      try {
-        await audio.play();
-      } catch (e) {
-        console.error('Audio play() failed', e);
-        setChatMessages((prev) => [...prev, { sender: 'bot', text: 'Không phát được audio TTS (trình duyệt chặn?).' }]);
-        setIsReading(false);
+        return;
       }
+
+      let idx = 0;
+      const playNext = () => {
+        if (idx >= segmentsAudio.length) {
+          setIsReading(false);
+          return;
+        }
+        const seg = segmentsAudio[idx];
+        const audioSrc = `data:audio/mp3;base64,${seg.audio}`;
+        const audio = new Audio(audioSrc);
+        ttsRef.current = audio;
+        audio.onended = () => {
+          idx += 1;
+          playNext();
+        };
+        audio.onerror = (e) => {
+          console.error('Audio playback error', e);
+          idx += 1;
+          playNext();
+        };
+        audio.play().catch((e) => {
+          console.error('Audio play() failed', e);
+          if (e && e.name === 'NotAllowedError') {
+            setShowResumeOverlay(true);
+          }
+          // Do not advance idx; wait for user to resume
+        });
+      };
+
+      playNext();
     } catch (err) {
       setChatMessages((prev) => [...prev, { sender: 'bot', text: err.message }]);
       setIsReading(false);
@@ -242,11 +262,12 @@ function ReadingPage() {
     setChatLoading(true);
     stopTTS();
     try {
-      // Use askQuestion instead of explainWord for smarter RAG responses
-      const answer = await askQuestion(q);
+      // Use askQuestion instead of explainWord for smarter RAG responses, scoped by filename if available
+      const storyFilename = filename || (pdfFile ? decodeURIComponent(pdfFile.split('/').pop()) : null);
+      const answer = await askQuestion(q, storyFilename);
       setChatMessages((prev) => [...prev, { sender: 'bot', text: answer }]);
 
-      // Auto TTS
+      // Auto TTS (best effort, no toast on block)
       try {
         const ttsRes = await fetch(`${API_BASE}/chatbot/tts`, {
           method: 'POST',
@@ -254,11 +275,27 @@ function ReadingPage() {
           body: JSON.stringify({ text: answer }),
         });
         if (ttsRes.ok) {
-          const blob = await ttsRes.blob();
-          const url = URL.createObjectURL(blob);
-          const audio = new Audio(url);
-          ttsRef.current = audio;
-          audio.play();
+          const segmentsAudio = await ttsRes.json();
+          if (Array.isArray(segmentsAudio) && segmentsAudio.length > 0) {
+            let idx = 0;
+            const playNext = () => {
+              if (idx >= segmentsAudio.length) return;
+              const seg = segmentsAudio[idx];
+              const audioSrc = `data:audio/mp3;base64,${seg.audio}`;
+              const audio = new Audio(audioSrc);
+              ttsRef.current = audio;
+              audio.onended = () => {
+                idx += 1;
+                playNext();
+              };
+              audio.play().catch((e) => {
+                if (e && e.name === 'NotAllowedError') {
+                  setShowResumeOverlay(true);
+                }
+              });
+            };
+            playNext();
+          }
         }
       } catch (e) {
         // ignore
@@ -350,6 +387,38 @@ function ReadingPage() {
 
   return (
     <div className="reading-page">
+      {/* AUTOPLAY RESUME OVERLAY */}
+      {showResumeOverlay && (
+        <div 
+          className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 backdrop-blur-md"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="text-center animate-in fade-in zoom-in duration-300">
+            <p className="text-amber-300 text-3xl font-bold mb-8 font-serif drop-shadow-lg">
+              📖 Audio is Ready!
+            </p>
+            <button
+              onClick={() => {
+                const audioEl = document.querySelector('audio');
+                if (audioEl) {
+                  audioEl.play().then(() => setShowResumeOverlay(false)).catch((err) => {
+                    console.error("Resume audio failed", err);
+                  });
+                } else if (ttsRef.current) {
+                  ttsRef.current.play().then(() => setShowResumeOverlay(false)).catch((err) => {
+                    console.error("Resume audio failed", err);
+                  });
+                } else {
+                  setShowResumeOverlay(false);
+                }
+              }}
+              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-6 px-12 rounded-full shadow-[0_0_60px_rgba(16,185,129,0.6)] text-2xl border-4 border-emerald-400 transition-transform transform hover:scale-105 active:scale-95"
+            >
+              ▶ TAP TO LISTEN
+            </button>
+          </div>
+        </div>
+      )}
       <div className="book-container">
         <HTMLFlipBook
           ref={bookRef}

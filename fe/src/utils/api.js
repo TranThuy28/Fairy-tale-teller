@@ -8,8 +8,9 @@ export const explainWord = async (question) => {
   return response.data.text; // Trả về text giải thích
 };
 
-export const askQuestion = async (question) => {
-  const response = await axios.post(`${API_BASE_URL}/ask`, { question });
+export const askQuestion = async (question, filename) => {
+  const payload = filename ? { question, filename } : { question };
+  const response = await axios.post(`${API_BASE_URL}/ask`, payload);
   return response.data.answer;
 };
 

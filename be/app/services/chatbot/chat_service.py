@@ -15,28 +15,42 @@ client = OpenAI(
 )
 
 
-def build_prompt(question: str, context_segments: List[str]) -> str:
+def build_prompt(
+    question: str,
+    context_segments: List[str],
+    memories: str = "",
+) -> str:
     context = "\n\n".join(context_segments) if context_segments else "No context."
+    memory_block = memories or "Chưa có thông tin gì về sở thích của bé."
     return f"""{LINDA_SYSTEM_PROMPT}
 
-CONTEXT FROM STORY:
+THÔNG TIN CÔ BIẾT VỀ BÉ (MEMORY):
+{memory_block}
+
+NGỮ CẢNH TỪ TRUYỆN (RAG):
 {context}
 
-USER QUESTION:
+CÂU HỎI CỦA BÉ:
 {question}
 
-INSTRUCTIONS:
-1. Answer the question based ONLY on the provided CONTEXT.
-2. If the answer is not in the context, say: "Cô chưa đọc đến đoạn đó, chúng mình cùng đọc tiếp nhé!" (Don't make up facts).
-3. Keep the answer under 2-3 sentences."""
+HƯỚNG DẪN:
+1. Trả lời dựa TRÊN HAI PHẦN: ký ức về bé (MEMORY) và ngữ cảnh từ truyện (RAG).
+2. Nếu câu trả lời KHÔNG có trong ngữ cảnh truyện, hãy nói: "Cô chưa đọc đến đoạn đó, chúng mình cùng đọc tiếp nhé!" và KHÔNG bịa chuyện.
+3. Trả lời ngắn gọn trong 2–3 câu, dùng ngôn ngữ đơn giản cho bé 2–5 tuổi.
+"""
 
 
-def ask_linda(question: str, top_k: int = 3) -> str:
+def ask_linda(
+    question: str,
+    top_k: int = 3,
+    filename: Optional[str] = None,
+    memories_text: str = "",
+) -> str:
     """
-    Use RAG context + OpenAI chat completion to answer.
+    Use RAG context + optional long-term memory + OpenAI chat completion to answer.
     """
-    context_segments = query_story_context(question, top_k=top_k)
-    prompt = build_prompt(question, context_segments)
+    context_segments = query_story_context(question, top_k=top_k, filename=filename)
+    prompt = build_prompt(question, context_segments, memories_text)
 
     messages = [
         {"role": "system", "content": LINDA_SYSTEM_PROMPT},
@@ -51,6 +65,3 @@ def ask_linda(question: str, top_k: int = 3) -> str:
 
     answer = response.choices[0].message.content.strip()
     return answer
-
-
-

@@ -20,6 +20,7 @@ class TTSRequest(BaseModel):
 class AskRequest(BaseModel):
     question: str
     current_story: Optional[str] = None
+    filename: Optional[str] = None
 
 
 class AskResponse(BaseModel):

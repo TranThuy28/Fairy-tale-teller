@@ -39,3 +39,7 @@ tiktoken>=0.7.0
 
 # Fix for chromadb 0.4.24 compatibility with numpy 2.0
 numpy<2.0.0
+
+# Long-term memory layer
+mem0ai
+sentence-transformers

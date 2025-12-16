@@ -1,7 +1,7 @@
 import logging
 import os
 
-from fastapi import APIRouter, File, HTTPException, UploadFile
+from fastapi import APIRouter, File, HTTPException, UploadFile, BackgroundTasks
 from fastapi.responses import Response
 
 from app.schemas.chatbot import (
@@ -12,10 +12,12 @@ from app.schemas.chatbot import (
     AskResponse,
 )
 from app.services.chatbot.audio_service import tts_generate
+from app.services.chatbot.audio_director import generate_multi_voice_audio
 from app.services.chatbot.word_explainer import explain_word_from_question
 from app.services.chatbot.chat_service import ask_linda
 from app.services.rag.ingestion import ingest_all_stories
 from app.utils.audio import speech_to_text
+from app.services.memory.memory_service import get_story_memory
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -44,26 +46,30 @@ async def stt_api(file: UploadFile = File(...)):
     return {"transcription": text}
 
 
-@router.post("/tts", response_class=Response)
+@router.post("/tts")
 async def tts_api(body: TTSRequest):
     """
-    TTS endpoint sử dụng proxy Pinkyne.
-    Nhận vào text, trả về audio/mp3 bytes.
+    Multi-character TTS: parse script, assign voices, return list of base64 segments.
+    Response: [{speaker, voice, audio, text}]
     """
-    logger.info("Received TTS request: text_len=%d", len(body.text))
-
-    audio_bytes = await tts_generate(text=body.text)
-
-    if audio_bytes is None:
-        logger.error("TTS generation failed or returned no audio.")
+    logger.info("Received TTS request (multi-voice): text_len=%d", len(body.text))
+    segments = await generate_multi_voice_audio(body.text)
+    if not segments:
         raise HTTPException(
             status_code=502,
-            detail="TTS service failed or returned no audio",
+            detail="TTS multi-voice failed or returned no audio",
         )
-
-    logger.info("Returning TTS audio response: len=%d", len(audio_bytes))
-
-    return Response(content=audio_bytes, media_type="audio/mpeg")
+    # Rename key 'audio_b64' to 'audio' to match requested schema
+    result = [
+        {
+          "speaker": seg.get("speaker"),
+          "voice": seg.get("voice"),
+          "audio": seg.get("audio_b64"),
+          "text": seg.get("text"),
+        }
+        for seg in segments
+    ]
+    return result
 
 
 @router.get("/tts")
@@ -72,12 +78,37 @@ async def tts_test():
 
 
 @router.post("/ask", response_model=AskResponse)
-async def ask_chatbot(body: AskRequest):
+async def ask_chatbot(body: AskRequest, background_tasks: BackgroundTasks):
     """
-    Ask Linda with RAG context from stories.
+    Ask Linda with RAG context from stories + long-term memory.
     """
-    logger.info("RAG ask received: %s", body.question)
-    answer = ask_linda(body.question)
+    user_id = "child_user_default"
+    memory = get_story_memory()
+    memories_text = ""
+    try:
+        memories_text = memory.get_memories(user_id, body.question) or ""
+    except Exception:
+        memories_text = ""
+
+    logger.info(
+        "RAG ask received: %s (filename=%s) with memories_len=%d",
+        body.question,
+        body.filename or body.current_story,
+        len(memories_text),
+    )
+    answer = ask_linda(
+        body.question,
+        filename=body.filename or body.current_story,
+        memories_text=memories_text,
+    )
+
+    # Persist new memories in background (non-blocking)
+    try:
+        background_tasks.add_task(memory.add_memory, user_id, body.question)
+        background_tasks.add_task(memory.add_memory, user_id, answer)
+    except Exception:
+        pass
+
     return AskResponse(answer=answer)
 
 
