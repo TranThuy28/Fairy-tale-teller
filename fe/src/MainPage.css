@@ -7,9 +7,9 @@
 .title {
   font-size: 2.5rem;
   font-weight: bold;
-  color: white;
   text-align: center;
   margin-bottom: 32px;
+  transition: color 0.3s ease;
 }
 
 .carousel-wrapper {
@@ -33,14 +33,12 @@
   padding: 0 8px;
 }
 
-/* Slide card */
 .slide-card {
   display: flex;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
   border-radius: 16px;
   overflow: hidden;
   height: 450px;
+  transition: background 0.3s ease;
 }
 
 .slide-image {
@@ -60,7 +58,7 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  color: white;
+  transition: color 0.3s ease;
 }
 
 .slide-info h2 {
@@ -80,18 +78,16 @@
 .view-button {
   align-self: flex-start;
   padding: 12px 24px;
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid;
   border-radius: 4px;
-  color: white;
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 
 .view-button:hover {
-  background: rgba(255, 255, 255, 0.3);
+  opacity: 0.9;
 }
 
 .dots {
@@ -106,16 +102,98 @@
   height: 12px;
   border-radius: 50%;
   border: none;
-  background: rgba(255, 255, 255, 0.4);
   cursor: pointer;
   transition: background 0.2s, transform 0.2s;
 }
 
 .dot:hover {
-  background: rgba(255, 255, 255, 0.6);
+  transform: scale(1.1);
 }
 
 .dot.active {
-  background: white;
   transform: scale(1.2);
+}
+
+.main-page.light .title {
+  color: #333; 
+}
+
+.main-page.light .slide-card {
+  background: rgba(255, 213, 128, 0.1); 
+}
+
+.main-page.light .slide-info {
+  color: #333; 
+}
+
+.main-page.light .view-button {
+  background: rgba(0, 0, 0, 0.1);
+  border-color: rgba(0, 0, 0, 0.2);
+  color: #333;
+}
+
+.main-page.light .dot {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.main-page.light .dot.active {
+  background: #333;
+}
+
+.main-page.dark .title {
+  color: #e0e0e0; /* Chữ sáng */
+}
+
+.main-page.dark .slide-card {
+  background: rgba(255, 255, 255, 0.1); /* Nền tối mờ */
+}
+
+.main-page.dark .slide-info {
+  color: #e0e0e0; /* Chữ sáng */
+}
+
+.main-page.dark .view-button {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #e0e0e0;
+}
+
+.main-page.dark .dot {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.main-page.dark .dot.active {
+  background: white;
+}
+
+.slide-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2); /* Light mode */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.main-page.dark .slide-card:hover {
+  box-shadow: 0 8px 16px rgba(255,255,255,0.2); /* Dark mode */
+}
+
+/* Animation cho dots */
+.dot {
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.dot:hover {
+  transform: scale(1.2);
+}
+
+.dot.active {
+  background: #007bff; /* Màu nổi bật */
+}
+
+/* Light/dark overrides (đã có, thêm animation) */
+.main-page.light .embla__slide {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.main-page.dark .embla__slide {
+  animation: fadeIn 0.6s ease-out;
 }

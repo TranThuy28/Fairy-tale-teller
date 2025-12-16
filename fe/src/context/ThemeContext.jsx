@@ -16,6 +16,7 @@ export const ThemeProvider = ({ children }) => {
 
   useEffect(() => {
     document.body.className = theme;
+    document.body.style.transition = 'background-color 0.5s ease';
   }, [theme]);
 
   return (

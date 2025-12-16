@@ -2,11 +2,11 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { ThemeContext } from '../context/ThemeContext'; // Đảm bảo import này
+import { ThemeContext } from '../context/ThemeContext';
 
 const SignIn = () => {
   const { signIn } = useContext(AuthContext);
-  const { theme } = useContext(ThemeContext); // Lấy theme
+  const { theme } = useContext(ThemeContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -22,15 +22,16 @@ const SignIn = () => {
     }
   };
 
-  // Styles động dựa trên theme
-  const bgColor = theme === 'light' ? '#f0f0f0' : '#121212';
-  const formBg = theme === 'light' ? 'white' : '#1e1e1e';
-  const textColor = theme === 'light' ? '#333' : '#e0e0e0';
-  const labelColor = theme === 'light' ? '#555' : '#bbb';
-  const inputBg = theme === 'light' ? 'white' : '#333';
-  const inputBorder = theme === 'light' ? '#ddd' : '#555';
-  const buttonBg = theme === 'light' ? '#007bff' : '#4a90e2';
-  const buttonHoverBg = theme === 'light' ? '#0056b3' : '#357abd';
+
+const bgColor = theme === 'light' ? '#FFD580' : '#121212';
+const formBg = theme === 'light' ? '#FFF3E0' : '#1e1e1e';
+const textColor = theme === 'light' ? '#333' : '#e0e0e0';
+const labelColor = theme === 'light' ? '#555' : '#bbb';
+const inputBg = theme === 'light' ? '#FFF3E0' : '#333'; 
+const inputBorder = theme === 'light' ? '#E0A070' : '#555'; 
+const buttonBg = theme === 'light' ? '#FF8C00' : '#4a90e2'; 
+const buttonHoverBg = theme === 'light' ? '#E07A00' : '#357abd'; 
+
 
   return (
     <div 

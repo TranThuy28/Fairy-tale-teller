@@ -12,7 +12,8 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #b2b2b2;
+  background-color: #b2b2b2; /* Fallback */
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 button:hover {
@@ -31,52 +32,70 @@ button:hover {
   input, button { font-size: 0.95rem; }
 }
 
+/* Styles cho light mode */
 body.light {
-  background-color: #f0f0f0;
-  color: #333;
+  background-color: #FFD580;
+  color: #333; /* Chữ tối */
 }
+
 /* Styles cho dark mode */
 body.dark {
   background-color: #121212;
-  color: #e0e0e0;
+  color: #e0e0e0; /* Chữ sáng */
 }
 
-.dark form, .dark .form-container {
-  background-color: #1e1e1e !important; 
-  box-shadow: 0 8px 16px rgba(0,0,0,0.3) !important;
-}
-
-.dark label {
-  color: #bbb !important; 
-}
-
-.dark input {
-  background-color: #333 !important;
-  color: #e0e0e0 !important;
-  border-color: #555 !important;
-}
-
-.dark button {
-  background-color: #4a90e2 !important; 
-  color: white !important;
-}
-
-.dark button:hover {
-  background-color: #357abd !important;
-}
-
-.dark h2, .dark p {
-  color: #e0e0e0 !important; 
-}
-
-.dark a {
-  color: #4a90e2 !important; 
-}
-
-.dark a:hover {
-  color: #357abd !important;
-}
-
-body, form, input, button, h2, p, a {
+body, form, input, button, h1, h2, h3, p, a, div {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Override cho link và button để thích ứng */
+a {
+  color: inherit; /* Kế thừa từ parent để thích ứng theme */
+  text-decoration: none;
+}
+
+button {
+  color: inherit;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.slide-in {
+  animation: slideIn 0.5s ease-out forwards;
+}
+
+@media (max-width: 768px) {
+  .embla__slide { flex: 0 0 100%; }
+  .slide-card { flex-direction: column; height: auto; } 
+  .slide-image { flex: none; height: 200px; }
+}
+
+@media (max-width: 768px) {
+  .story-detail-container {
+    flex-direction: column !important;
+  }
+  .story-detail-main {
+    max-width: 100% !important;
+  }
+  .story-detail-sidebar {
+    max-width: 100% !important;
+    margin-top: 24px;
+  }
 }

@@ -1,7 +1,7 @@
 // src/utils/api.js
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8000/api/chatbot'; // Sửa port thành 8000 (backend FastAPI)
+const API_BASE_URL = 'http://localhost:8000/api/chatbot'; 
 
 export const explainWord = async (question) => {
   const response = await axios.post(`${API_BASE_URL}/word-explain`, { question });

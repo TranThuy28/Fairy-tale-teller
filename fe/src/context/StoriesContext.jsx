@@ -36,36 +36,35 @@ const mockStories = [
   {
     id: 5,
     title: "Con Không Có Miệng",
-    description: "Truyện vui nhộn về nhân vật không có miệng ở thị trấn Lúc Búc, tranh Tạ Lan Hạnh, lời Mai Phương (Nhà xuất bản Kim Đồng).",
-    image: "/assets/covers/con-khong-co-mieng.jpg", // Hoặc URL search: https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=2495652410801961
-    pdf: "/stories/822.100.pdf", // Path public
+    description: "Truyện vui nhộn về nhân vật không có miệng ở thị trấn Lúc Búc...",
+    image: "/assets/covers/con-khong-co-mieng.jpg", 
+    pdf: "/stories/822.100.pdf", 
   },
   {
     id: 6,
     title: "Xoài Ngon Xoài Ngọt",
-    description: "Hành trình từ hạt xoài đến cây xanh tươi, dạy trẻ về thiên nhiên (từ Let's Read Asia, sưu tầm Nguyễn Thị Minh Hồng).",
-    image: "/assets/covers/xoai-ngon-xoai-ngot.jpg", // URL search: https://cdn.tgdd.vn/Files/2018/06/08/1093983/cac-loai-xoai-pho-bien-o-viet-nam-1.jpg
-    pdf: "/stories/3092.100.pdf",
+    description: "Hành trình từ hạt xoài đến cây xanh tươi, dạy trẻ về thiên nhiên ...",
+    image: "/assets/covers/xoai-ngon-xoai-ngot.jpg", 
   },
   {
     id: 7,
     title: "Thả Diều Bay",
-    description: "Câu chuyện vui về thả diều trên bãi biển, nhà thuyền Quang Toàn (truyện trẻ em về phiêu lưu ngoài trời).",
-    image: "/assets/covers/tha-dieu-bay.jpg", // URL search: https://baokhanhhoa.vn/file//e7837c02857c8ca30185a8c39b582c03/dataimages/201906/original/images5365998_1.jpg
+    description: "Câu chuyện vui về thả diều trên bãi biển...",
+    image: "/assets/covers/tha-dieu-bay.jpg",
     pdf: "/stories/823.100.pdf",
   },
   {
     id: 8,
     title: "The Adventures of Chaddi Head",
-    description: "Phiêu lưu của cậu bé siêu anh hùng với chiếc quần lót trên đầu (author Parinita Shetty, illustrator Saksham Arora, Pratham Books).",
-    image: "/assets/covers/chaddi-head.jpg", // URL search: https://storyweaver.org.in/v1/images/story_thumbnails/135716/large.jpg?1665038326 (tôi adjust từ web)
+    description: "Phiêu lưu của cậu bé siêu anh hùng với chiếc quần lót trên đầu...",
+    image: "/assets/covers/chaddi-head.jpg", 
     pdf: "/stories/2168.100.pdf",
   },
   {
     id: 9,
     title: "Xoài Ngon Xoài Ngọt (Phiên Bản 2)",
-    description: "Biến thể của truyện xoài, dạy về sự phát triển của cây cối (từ Let's Read Asia).",
-    image: "/assets/covers/xoai-ngon-xoai-ngot-2.jpg", // Tái sử dụng hoặc khác
+    description: "Biến thể của truyện xoài, dạy về sự phát triển của cây cối ...",
+    image: "/assets/covers/xoai-ngon-xoai-ngot-2.jpg", 
     pdf: "/stories/191.100.pdf",
   },
 ];

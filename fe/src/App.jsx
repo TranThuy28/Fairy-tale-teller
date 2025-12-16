@@ -8,9 +8,9 @@ import MainPage from './MainPage';
 import SignUp from './pages/SignUp';
 import SignIn from './pages/SignIn';
 import ReadStories from './pages/ReadStories';
-import UnreadStories from './pages/UnreadStories';
 import StoryDetail from './pages/StoryDetail';
 import Donate from './pages/Donate'; 
+//import Chatbot from './components/Chatbot';
 
 function App() {
   return (
@@ -19,14 +19,15 @@ function App() {
         <ThemeProvider> 
           <Router>
             <NavBar />
+            {/* <Chatbot /> */}
             <Routes>
               <Route path="/" element={<MainPage />} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/signin" element={<SignIn />} />
               <Route path="/read-stories" element={<ReadStories />} />
-              <Route path="/unread-stories" element={<UnreadStories />} />
               <Route path="/story/:id" element={<StoryDetail />} />
               <Route path="/donate" element={<Donate />} /> 
+              <Route path="*" element={<div>404 Not Found</div>} />
             </Routes>
           </Router>
         </ThemeProvider>

@@ -8,27 +8,32 @@ const SignUp = () => {
   const { theme } = useContext(ThemeContext); 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState(''); // Thêm state cho confirm password
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (password !== confirmPassword) {
+      setError('Mật khẩu và xác nhận mật khẩu không khớp.');
+      return;
+    }
     try {
       signUp(email, password);
-      navigate('/');
+      navigate('/signin'); // Redirect đến đăng nhập thay vì '/'
     } catch (err) {
       setError('Đăng ký thất bại.');
     }
   };
 
-  const bgColor = theme === 'light' ? '#f0f0f0' : '#121212';
-  const formBg = theme === 'light' ? 'white' : '#1e1e1e';
+  const bgColor = theme === 'light' ? '#FFD580' : '#121212'; 
+  const formBg = theme === 'light' ? '#FFF3E0' : '#1e1e1e'; 
   const textColor = theme === 'light' ? '#333' : '#e0e0e0';
   const labelColor = theme === 'light' ? '#555' : '#bbb';
-  const inputBg = theme === 'light' ? 'white' : '#333';
-  const inputBorder = theme === 'light' ? '#ddd' : '#555';
-  const buttonBg = theme === 'light' ? '#007bff' : '#4a90e2';
-  const buttonHoverBg = theme === 'light' ? '#0056b3' : '#357abd';
+  const inputBg = theme === 'light' ? '#FFF3E0' : '#333'; 
+  const inputBorder = theme === 'light' ? '#E0A070' : '#555'; 
+  const buttonBg = theme === 'light' ? '#FF8C00' : '#4a90e2'; 
+  const buttonHoverBg = theme === 'light' ? '#E07A00' : '#357abd'; 
 
   return (
     <div 
@@ -59,8 +64,8 @@ const SignUp = () => {
         <form onSubmit={handleSubmit}>
           <label style={{ display: 'block', fontSize: '0.85rem', color: labelColor, marginBottom: '6px' }}>EMAIL</label>
           <input 
-            type="email" 
-            placeholder="Nhập email của bạn" 
+            type="email"
+            placeholder="Nhập email của bạn"
             value={email} 
             onChange={(e) => setEmail(e.target.value)} 
             required 
@@ -85,6 +90,28 @@ const SignUp = () => {
             placeholder="Nhập mật khẩu (ít nhất 6 ký tự)" 
             value={password} 
             onChange={(e) => setPassword(e.target.value)} 
+            required 
+            style={{ 
+              display: 'block', 
+              width: '100%', 
+              padding: '12px', 
+              marginBottom: '20px', // Thêm margin để cách confirm
+              border: `1px solid ${inputBorder}`, 
+              borderRadius: '6px', 
+              fontSize: '1rem', 
+              background: inputBg, 
+              color: textColor, 
+              transition: 'border-color 0.3s' 
+            }}
+            onFocus={(e) => e.target.style.borderColor = buttonBg}
+            onBlur={(e) => e.target.style.borderColor = inputBorder}
+          />
+          <label style={{ display: 'block', fontSize: '0.85rem', color: labelColor, marginBottom: '6px' }}>XÁC NHẬN MẬT KHẨU</label>
+          <input 
+            type="password" 
+            placeholder="Nhập lại mật khẩu" 
+            value={confirmPassword} 
+            onChange={(e) => setConfirmPassword(e.target.value)} 
             required 
             style={{ 
               display: 'block', 
