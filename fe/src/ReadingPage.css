@@ -8,8 +8,15 @@
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: #fffacd;
+  background: var(--bg-light);
+  color: var(--text-light);
   font-family: 'Fredoka', sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.dark .reading-page {
+  background: var(--bg-dark);
+  color: var(--text-dark);
 }
 
 .book-container {
@@ -27,7 +34,7 @@
 }
 
 .page {
-  background-color: #fff;
+  background-color: var(--card-bg-light);
   display: flex;
   flex-direction: column;
   padding: 20px;
@@ -35,14 +42,23 @@
   position: relative;
 }
 
+body.dark .page {
+  background-color: #e0e0e0; /* Keep pages light for readability or adjust if needed */
+  color: #333; /* Text on page should be dark */
+}
+
 .cover-page {
-  background: #fff;
+  background: var(--card-bg-light);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 40px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+body.dark .cover-page {
+  background: #e0e0e0;
 }
 
 .cover-page .page-content {
@@ -60,8 +76,12 @@
 }
 
 .blank-page {
-  background-color: #fff;
+  background-color: var(--card-bg-light);
   box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
+}
+
+body.dark .blank-page {
+  background-color: #e0e0e0;
 }
 
 .page-content {
@@ -95,11 +115,16 @@
   align-items: center;
   gap: 1rem;
   margin-top: 2rem;
-  background: white;
+  background: var(--card-bg-light);
   padding: 0.5rem 1rem;
   border-radius: 50px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   font-family: 'Fredoka', sans-serif;
+}
+
+body.dark .controls {
+  background: var(--card-bg-dark);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .controls button {
@@ -108,7 +133,7 @@
   font-weight: 600;
   border: none;
   border-radius: 30px;
-  background: #ffd966;
+  background: var(--primary-yellow);
   color: #333;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -119,7 +144,7 @@
 .controls button:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
-  background: #ffcc33;
+  background: var(--primary-yellow-dark);
 }
 
 .controls button:active:not(:disabled) {
@@ -136,40 +161,59 @@
 .page-info {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #333;
+  color: var(--text-light);
   min-width: 80px;
   text-align: center;
   font-family: 'Comic Neue', cursive;
+}
+
+body.dark .page-info {
+  color: var(--text-dark);
 }
 
 .page-selector {
   display: flex;
   align-items: center;
   gap: 1rem;
-  background: white;
+  background: var(--card-bg-light);
   padding: 0.75rem 1.5rem;
   border-radius: 25px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+body.dark .page-selector {
+  background: var(--card-bg-dark);
+}
+
 .page-selector label {
   font-weight: 600;
-  color: #333;
+  color: var(--text-light);
+}
+
+body.dark .page-selector label {
+  color: var(--text-dark);
 }
 
 .page-selector select {
   padding: 0.5rem 1rem;
-  border: 2px solid #667eea;
+  border: 2px solid var(--primary-yellow);
   border-radius: 15px;
   font-size: 1rem;
   cursor: pointer;
-  background: white;
+  background: var(--card-bg-light);
+  color: var(--text-light);
   outline: none;
   transition: border-color 0.3s ease;
 }
 
+body.dark .page-selector select {
+  background: #333;
+  color: var(--text-dark);
+  border-color: var(--primary-yellow);
+}
+
 .page-selector select:focus {
-  border-color: #764ba2;
+  border-color: var(--primary-yellow-dark);
 }
 
 .loading-container,
@@ -179,16 +223,22 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: #fffacd;
-  color: #333;
+  background: var(--bg-light);
+  color: var(--text-light);
   font-family: 'Fredoka', sans-serif;
+}
+
+body.dark .loading-container,
+body.dark .error-container {
+  background: var(--bg-dark);
+  color: var(--text-dark);
 }
 
 .loading-container .spinner {
   width: 60px;
   height: 60px;
-  border: 6px solid rgba(255, 217, 102, 0.3);
-  border-top-color: #ffd966;
+  border: 6px solid rgba(255, 193, 7, 0.3);
+  border-top-color: var(--primary-yellow);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
@@ -198,24 +248,35 @@
   to {
     transform: rotate(360deg);
   }
+}
+
 .loading-container p {
   font-size: 1.4rem;
   font-weight: 600;
-  color: #333;
+  color: var(--text-light);
   font-family: 'Bubblegum Sans', cursive;
+}
+
+body.dark .loading-container p {
+  color: var(--text-dark);
 }
 
 .error-container h2 {
   font-size: 2.5rem;
   margin-bottom: 1rem;
   font-family: 'Bubblegum Sans', cursive;
-  color: #333;
+  color: var(--text-light);
+}
+
+body.dark .error-container h2 {
+  color: var(--text-dark);
 }
 
 .error-container p {
   font-size: 1.2rem;
   margin-bottom: 1.5rem;
-  color: #666;
+  color: var(--text-light);
+  opacity: 0.8;
 }
 
 .error-container button {
@@ -224,7 +285,7 @@
   font-weight: 600;
   border: none;
   border-radius: 30px;
-  background: #ffd966;
+  background: var(--primary-yellow);
   color: #333;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -235,7 +296,7 @@
 .error-container button:hover {
   transform: translateY(-2px);
   box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
-  background: #ffcc33;
+  background: var(--primary-yellow-dark);
 }
 
 .loading {
@@ -247,8 +308,339 @@
   color: #666;
   font-style: italic;
   font-family: 'Comic Neue', cursive;
-} color: #666;
+}
+
+/* Chat Panel Styles */
+.chat-panel {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 350px;
+  height: 500px;
+  background: var(--card-bg-light);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 100;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+  transform-origin: bottom right;
+}
+
+.chat-panel.closed {
+  transform: scale(0.9) translateY(20px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.chat-panel.open {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--primary-yellow);
+  padding: 0 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.chat-header h3 {
+  background: var(--primary-yellow);
+  color: #333;
+  padding: 16px;
+  margin: 0;
+  font-size: 1.1rem;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  text-align: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.close-chat-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: #333;
+  cursor: pointer;
+  padding: 0 8px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.close-chat-btn:hover {
+  color: #000;
+}
+
+.chat-toggle-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: var(--primary-yellow);
+  color: #333;
+  border: none;
+  border-radius: 30px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  z-index: 99;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.chat-toggle-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  background: var(--primary-yellow-dark);
+}
+
+body.dark .chat-panel {
+  background: var(--card-bg-dark);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.read-btn {
+  margin: 10px;
+  padding: 8px 16px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: background 0.2s;
+  align-self: center;
+  width: calc(100% - 20px);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.read-btn:hover:not(:disabled) {
+  background: #45a049;
+}
+
+.read-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+body.dark .chat-messages {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.chat-msg {
+  max-width: 85%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.chat-msg.user {
+  align-self: flex-end;
+  background: var(--primary-yellow);
+  color: #333;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-msg.bot {
+  align-self: flex-start;
+  background: #e0e0e0;
+  color: #333;
+  border-bottom-left-radius: 4px;
+}
+
+body.dark .chat-msg.bot {
+  background: #444;
+  color: #eee;
+}
+
+.chat-msg.thinking {
   font-style: italic;
+  color: #666;
+  background: #f5f5f5;
+  display: inline-flex;
+  align-items: center;
+}
+
+body.dark .chat-msg.thinking {
+  color: #aaa;
+  background: #3a3a3a;
+}
+
+.chat-msg .dot {
+  animation: thinking 1.4s infinite both;
+  margin-left: 2px;
+  font-weight: bold;
+}
+
+.chat-msg .dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.chat-msg .dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.chat-msg .dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes thinking {
+  0% {
+    opacity: 0.2;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.2;
+  }
+}
+
+.chat-input {
+  padding: 12px;
+  background: var(--card-bg-light);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+body.dark .chat-input {
+  background: var(--card-bg-dark);
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+  outline: none;
+  font-size: 0.95rem;
+  background: var(--bg-light);
+  color: var(--text-light);
+  transition: border-color 0.2s;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+body.dark .chat-input input {
+  background: #333;
+  border-color: #555;
+  color: var(--text-dark);
+}
+
+.chat-input input:focus {
+  border-color: var(--primary-yellow);
+}
+
+.chat-input button {
+  padding: 8px 16px;
+  background: var(--primary-yellow);
+  color: #333;
+  border: none;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.chat-input button:hover:not(:disabled) {
+  background: var(--primary-yellow-dark);
+}
+
+.chat-input button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.mic-btn {
+  background: #f5f5f5 !important;
+  border: 1px solid #ddd !important;
+  color: #555 !important;
+  cursor: pointer;
+  padding: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 50%;
+  min-width: 50px;
+  height: 50px;
+  margin: 0 4px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.mic-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+.mic-btn:hover {
+  background: #fff !important;
+  transform: translateY(-2px);
+  color: var(--primary-yellow-dark) !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  border-color: var(--primary-yellow) !important;
+}
+
+.mic-btn.recording {
+  background: #ff4444 !important;
+  color: white !important;
+  border-color: #ff4444 !important;
+  animation: pulse 1.5s infinite;
+  box-shadow: 0 0 0 4px rgba(255, 68, 68, 0.2);
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.4); }
+  70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 68, 68, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 68, 68, 0); }
+}
+
+/* Scrollbar for chat messages */
+.chat-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+body.dark .chat-messages::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* Responsive design */

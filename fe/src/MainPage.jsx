@@ -1,7 +1,6 @@
-import React, { useContext, useCallback, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StoriesContext } from './context/StoriesContext'; 
-import useEmblaCarousel from 'embla-carousel-react';
 import "./MainPage.css";
 
 function MainPage() {
@@ -12,55 +11,36 @@ function MainPage() {
   const { stories } = context; 
 
   const navigate = useNavigate();
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
-  const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const scrollTo = useCallback((index) => emblaApi && emblaApi.scrollTo(index), [emblaApi]);
-
-  const onSelect = useCallback(() => {
-    if (!emblaApi) return;
-    setSelectedIndex(emblaApi.selectedScrollSnap());
-  }, [emblaApi]);
-
-  useEffect(() => {
-    if (!emblaApi) return;
-    emblaApi.on('select', onSelect);
-    return () => emblaApi.off('select', onSelect);
-  }, [emblaApi, onSelect]);
-
-  if (stories.length === 0) return <div style={{ color: 'white', textAlign: 'center' }}>Loading...</div>;
+  if (stories.length === 0) return <div style={{ color: 'var(--text-light)', textAlign: 'center', padding: '2rem' }}>Loading...</div>;
 
   return (
     <div className="main-page">
-      <h1 className="title">Trang Chủ - Danh Sách Truyện</h1>
-      <div className="carousel-wrapper">
-        <div className="embla" ref={emblaRef}>
-          <div className="embla__container">
-            {stories.map((story, index) => (
-              <div key={story.id} className="embla__slide">
-                <div className="slide-card">
-                  <div className="slide-image">
-                    <img src={story.image} alt={story.title} />
-                  </div>
-                  <div className="slide-info">
-                    <h2>{story.title}</h2>
-                    <p>{story.description}</p>
-                    <button className="view-button" onClick={() => navigate(`/story/${story.id}`)}>
-                      Xem Thông Tin
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+      <div className="hero-section">
+        <div className="hero-content">
+          <h1>Fairy Tale Teller</h1>
+          <p>Lạc vào chốn thần tiên</p>
         </div>
-        <div className="dots">
-          {stories.map((_, index) => (
-            <button
-              key={index}
-              className={`dot ${selectedIndex === index ? 'active' : ''}`}
-              onClick={() => scrollTo(index)}
-            />
+        <img 
+          src="https://www.pixelstalk.net/wp-content/uploads/2025/08/Fairy-Desktop-Wallpaper-HD.jpg" 
+          alt="Library Hero" 
+          className="hero-image"
+        />
+      </div>
+      
+      <div className="content-container">
+        <h2 className="section-title">Danh sách truyện</h2>
+        <div className="stories-grid">
+          {stories.map((story) => (
+            <div key={story.id} className="story-card" onClick={() => navigate(`/reading/${story.pdf}`)}>
+              <div className="story-image-wrapper">
+                <img src={story.image} alt={story.title} loading="lazy" />
+              </div>
+              <div className="story-info">
+                <h3 className="story-title">{story.title}</h3>
+                <p className="story-description">{story.description}</p>
+              </div>
+            </div>
           ))}
         </div>
       </div>

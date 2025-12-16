@@ -35,4 +35,7 @@ rapidfuzz==3.7.0
 pdfplumber==0.11.4
 
 # RAG / embeddings
-tiktoken==0.7.0
+tiktoken>=0.7.0
+
+# Fix for chromadb 0.4.24 compatibility with numpy 2.0
+numpy<2.0.0

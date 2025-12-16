@@ -1,10 +1,14 @@
-import { useState, useRef, useEffect, forwardRef } from 'react';
+import { useState, useRef, useEffect, forwardRef, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import HTMLFlipBook from 'react-pageflip';
 import * as pdfjsLib from 'pdfjs-dist';
 import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import './ReadingPage.css';
 import pageTurnSound from '/assets/page-turn.mp3';
+import { StoriesContext } from './context/StoriesContext';
+import { explainWord, speechToText, askQuestion } from './utils/api';
+import { FaMicrophone, FaStop } from 'react-icons/fa';
+
 const API_BASE = 'http://127.0.0.1:8000/api';
 // Configure PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
@@ -33,6 +37,7 @@ Page.displayName = 'Page';
 function ReadingPage() {
   const { filename } = useParams();
   const navigate = useNavigate();
+  const { stories, markAsRead } = useContext(StoriesContext);
   const [pages, setPages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -43,14 +48,26 @@ function ReadingPage() {
   const [chatInput, setChatInput] = useState('');
   const [chatMessages, setChatMessages] = useState([]);
   const [chatLoading, setChatLoading] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(true);
+  const [isRecording, setIsRecording] = useState(false);
   const bookRef = useRef();
   const audioRef = useRef(null);
   const ttsRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+
   useEffect(() => {
     init();
     audioRef.current = new Audio(pageTurnSound);
     audioRef.current.volume = 0.5;
-  }, [filename]);
+
+    // Mark as read if story exists
+    if (filename && stories.length > 0) {
+      const story = stories.find(s => s.pdf === filename);
+      if (story) {
+        markAsRead(story.id);
+      }
+    }
+  }, [filename, stories]);
 
   const init = async () => {
     try {
@@ -127,13 +144,47 @@ function ReadingPage() {
     setIsReading(false);
   };
 
+  const startRecording = async () => {
+    try {
+      stopTTS();
+      setIsRecording(true);
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorderRef.current = new MediaRecorder(stream);
+      const chunks = [];
+      mediaRecorderRef.current.ondataavailable = (e) => chunks.push(e.data);
+      mediaRecorderRef.current.onstop = async () => {
+        const blob = new Blob(chunks, { type: 'audio/webm' });
+        try {
+          const text = await speechToText(blob);
+          if (text) {
+            setChatInput(text);
+            sendChat(text); // Auto-send after recording
+          }
+        } catch (err) {
+          console.error('STT Error:', err);
+        }
+        setIsRecording(false);
+        stream.getTracks().forEach(track => track.stop());
+      };
+      mediaRecorderRef.current.start();
+    } catch (err) {
+      console.error('Microphone access error:', err);
+      setIsRecording(false);
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+    }
+  };
+
   const readCurrentPage = async () => {
     if (!pdfFile) return;
     stopTTS();
     setIsReading(true);
     try {
       const encoded = encodeURIComponent(filename || pdfFile.split('/').pop());
-      // đọc cả spread: trang trái (currentPage) và trang phải (currentPage+1 nếu có)
       const pageIndexes = [currentPage, currentPage + 1].filter(
         (p) => p >= 0 && p < totalPages
       );
@@ -181,21 +232,18 @@ function ReadingPage() {
     }
   };
 
-  const sendChat = async () => {
-    if (!chatInput.trim()) return;
-    const q = chatInput.trim();
-    setChatInput('');
+  const sendChat = async (manualQuestion = null) => {
+    const q = typeof manualQuestion === 'string' ? manualQuestion : chatInput.trim();
+    if (!q) return;
+    
+    if (typeof manualQuestion !== 'string') setChatInput('');
+    
     setChatMessages((prev) => [...prev, { sender: 'user', text: q }]);
     setChatLoading(true);
     stopTTS();
     try {
-      const res = await fetch(`${API_BASE}/chatbot/ask`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: q }),
-      });
-      const data = await res.json();
-      const answer = data.answer || 'Cô chưa đọc đến đoạn đó, chúng mình cùng đọc tiếp nhé!';
+      // Use askQuestion instead of explainWord for smarter RAG responses
+      const answer = await askQuestion(q);
       setChatMessages((prev) => [...prev, { sender: 'bot', text: answer }]);
 
       // Auto TTS
@@ -302,7 +350,7 @@ function ReadingPage() {
 
   return (
     <div className="reading-page">
-      <div className="book-container" style={{ width: '50%', margin: '0 auto' }}>
+      <div className="book-container">
         <HTMLFlipBook
           ref={bookRef}
           width={450}
@@ -358,8 +406,20 @@ function ReadingPage() {
       </div>
       
       {/* Chat with Linda (RAG) */}
-      <div className="chat-panel">
-        <h3>Hỏi cô Linda về trang này</h3>
+      {!isChatOpen && (
+        <button className="chat-toggle-btn" onClick={() => setIsChatOpen(true)}>
+          <span role="img" aria-label="chat">💬</span> Hỏi cô Linda
+        </button>
+      )}
+
+      <div className={`chat-panel ${isChatOpen ? 'open' : 'closed'}`}>
+        <div className="chat-header">
+          <h3>Hỏi cô Linda về trang này</h3>
+          <button className="close-chat-btn" onClick={() => setIsChatOpen(false)} aria-label="Close chat">
+            ×
+          </button>
+        </div>
+        
         <button className="read-btn" onClick={readCurrentPage} disabled={isReading}>
           {isReading ? 'Đang đọc...' : 'Đọc to trang hiện tại (TTS)'}
         </button>
@@ -369,6 +429,11 @@ function ReadingPage() {
               {m.text}
             </div>
           ))}
+          {chatLoading && (
+            <div className="chat-msg bot thinking">
+              Cô đang suy nghĩ
+            </div>
+          )}
         </div>
         <div className="chat-input">
           <input
@@ -379,6 +444,13 @@ function ReadingPage() {
               if (e.key === 'Enter') sendChat();
             }}
           />
+          <button 
+            className={`mic-btn ${isRecording ? 'recording' : ''}`}
+            onClick={isRecording ? stopRecording : startRecording}
+            title={isRecording ? "Dừng ghi âm" : "Ghi âm câu hỏi"}
+          >
+            {isRecording ? <FaStop /> : <FaMicrophone />}
+          </button>
           <button onClick={sendChat} disabled={chatLoading}>Gửi</button>
         </div>
       </div>

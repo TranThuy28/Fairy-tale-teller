@@ -57,9 +57,35 @@ const Chatbot = () => {
         placeholder="Hỏi nghĩa từ, ví dụ: 'Từ apple nghĩa là gì?'"
         style={{ width: '70%', padding: '8px', marginRight: '8px' }}
       />
-      <button onClick={() => handleExplain(question)}>Gửi</button>
-      <button onClick={isRecording ? stopRecording : startRecording}>
-        <FaMicrophone /> {isRecording ? 'Dừng Ghi Âm' : 'Ghi Âm Hỏi'}
+      <button 
+        onClick={() => handleExplain(question)}
+        style={{ padding: '10px 20px', borderRadius: '8px', border: 'none', backgroundColor: '#2196F3', color: 'white', cursor: 'pointer' }}
+      >
+        Gửi
+      </button>
+      <button 
+        onClick={isRecording ? stopRecording : startRecording}
+        style={{
+          padding: '12px 28px',
+          fontSize: '16px',
+          fontWeight: '600',
+          borderRadius: '50px',
+          backgroundColor: isRecording ? '#ff4d4d' : '#4CAF50',
+          color: 'white',
+          border: 'none',
+          cursor: 'pointer',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '10px',
+          marginLeft: '12px',
+          boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+          transition: 'all 0.3s ease',
+          transform: isRecording ? 'scale(1.05)' : 'scale(1)'
+        }}
+        onMouseEnter={(e) => !isRecording && (e.currentTarget.style.transform = 'scale(1.05)')}
+        onMouseLeave={(e) => !isRecording && (e.currentTarget.style.transform = 'scale(1)')}
+      >
+        <FaMicrophone size={20} /> {isRecording ? 'Dừng Ghi Âm' : 'Ghi Âm Hỏi'}
       </button>
       {explanation && (
         <div>

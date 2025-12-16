@@ -50,3 +50,6 @@ coverage/
 *.bak
 *.tmp
 temp/
+
+cache/
+chroma_db/

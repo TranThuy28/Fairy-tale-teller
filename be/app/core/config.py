@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     pinkyne_base_url: str = "https://vip.pinkyne.com/v1"
     pinkyne_api_key: str
 
+    openai_api_key: str | None = None
+
     # Default TTS params (can be overridden via env)
     tts_model: str = "gpt-4o-mini-tts"
     tts_voice: str = "alloy"
@@ -24,6 +26,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
+        extra = "ignore"
 
 
 @lru_cache

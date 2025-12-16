@@ -12,6 +12,9 @@ import UnreadStories from './pages/UnreadStories';
 import StoryDetail from './pages/StoryDetail';
 import Donate from './pages/Donate'; 
 import ReadingPage from './ReadingPage';
+import SearchPage from './pages/SearchPage';
+import UploadStory from './pages/UploadStory';
+
 function App() {
   return (
     <AuthProvider>
@@ -27,8 +30,9 @@ function App() {
               <Route path="/unread-stories" element={<UnreadStories />} />
               <Route path="/story/:id" element={<StoryDetail />} />
               <Route path="/donate" element={<Donate />} /> 
-              <Route path="/reading" element={<ReadingPage />} /> 
-
+              <Route path="/reading/:filename" element={<ReadingPage />} /> 
+              <Route path="/search" element={<SearchPage />} />
+              <Route path="/upload-story" element={<UploadStory />} />
             </Routes>
           </Router>
         </ThemeProvider>

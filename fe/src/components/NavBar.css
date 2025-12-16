@@ -1,7 +1,7 @@
 .navbar {
-  background-color: #333;
+  background-color: var(--text-light);
   padding: 16px;
-  color: white;
+  color: var(--bg-light);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -10,6 +10,7 @@
   top: 0;
   z-index: 1000;
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .navbar-left,
@@ -20,14 +21,14 @@
 }
 
 .navbar-link {
-  color: white;
+  color: var(--bg-light);
   text-decoration: none;
   font-size: 1rem;
   transition: color 0.3s, transform 0.2s;
 }
 
 .navbar-link:hover {
-  color: #007bff;
+  color: var(--primary-yellow);
   transform: scale(1.05);
 }
 
@@ -39,15 +40,16 @@
 .search-input {
   padding: 10px;
   border-radius: 20px;
-  border: 1px solid #555;
+  border: 1px solid rgba(255,255,255,0.2);
   margin-right: 8px;
-  background-color: #444;
-  color: white;
+  background-color: rgba(255,255,255,0.1);
+  color: var(--bg-light);
   transition: border-color 0.3s;
 }
 
 .search-input:focus {
-  border-color: #007bff;
+  border-color: var(--primary-yellow);
+  outline: none;
 }
 
 .search-button {
@@ -71,14 +73,15 @@
 }
 
 .icon:hover {
-  color: #007bff;
+  color: var(--primary-yellow);
 }
 
 .notifications-dropdown {
   position: absolute;
   right: 0;
   top: 30px;
-  background: #444;
+  background: var(--card-bg-light);
+  color: var(--text-light);
   padding: 16px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
@@ -104,12 +107,12 @@
 .hamburger-icon {
   display: none;
   cursor: pointer;
-  color: white;
+  color: var(--bg-light);
   transition: color 0.3s;
 }
 
 .hamburger-icon:hover {
-  color: #007bff;
+  color: var(--primary-yellow);
 }
 
 .menu {
@@ -138,7 +141,7 @@
     top: 60px; /* Dưới navbar */
     left: 0;
     width: 100%;
-    background-color: #333;
+    background-color: var(--text-light);
     padding: 16px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     z-index: 999;
@@ -173,28 +176,31 @@
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
 .navbar.dark {
-  background-color: #1e1e1e; /* Nền tối hơn */
+  background-color: var(--card-bg-dark); /* Nền tối hơn */
+  color: var(--text-dark);
 }
 
 .navbar.dark .navbar-link {
-  color: #e0e0e0; /* Text sáng */
+  color: var(--text-dark); /* Text sáng */
 }
 
 .navbar.dark .navbar-link:hover {
-  color: #4a90e2; /* Accent dark */
+  color: var(--primary-yellow); /* Accent dark */
 }
 
 .navbar.dark .search-input {
-  background-color: #333;
+  background-color: rgba(255,255,255,0.05);
   border-color: #555;
-  color: #e0e0e0;
+  color: var(--text-dark);
 }
 
 .navbar.dark .notifications-dropdown {
-  background: #333;
+  background: var(--card-bg-dark);
+  color: var(--text-dark);
 }
 
 .navbar.dark .menu.open {
-  background-color: #1e1e1e;
+  background-color: var(--card-bg-dark);
 }
