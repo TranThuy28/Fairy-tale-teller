@@ -185,9 +185,23 @@ function ReadingPage() {
     setIsReading(true);
     try {
       const encoded = encodeURIComponent(filename || pdfFile.split('/').pop());
-      const pageIndexes = [currentPage, currentPage + 1].filter(
-        (p) => p >= 0 && p < totalPages
-      );
+      
+      let pageIndexes = [];
+      if (currentPage === 0) {
+        pageIndexes = [0];
+      } else {
+        if (currentPage > 1) {
+          const leftPdfIndex = currentPage - 1;
+          if (leftPdfIndex < totalPages) pageIndexes.push(leftPdfIndex);
+        }
+        
+        const rightPdfIndex = currentPage;
+        if (rightPdfIndex < totalPages) pageIndexes.push(rightPdfIndex);
+      }
+
+      if (pageIndexes.length === 0) {
+         throw new Error('Không có nội dung để đọc.');
+      }
 
       const allSegments = [];
       for (const p of pageIndexes) {
@@ -313,20 +327,27 @@ function ReadingPage() {
 
   const goToLastPage = () => {
     if (bookRef.current) {
-      bookRef.current.pageFlip().turnToPage(totalPages - 1);
+      // Total flipbook pages = totalPages + 1 (due to blank page)
+      bookRef.current.pageFlip().turnToPage(totalPages);
     }
   };
 
   const getPageDisplay = () => {
+    if (totalPages === 0) return '';
     if (currentPage === 0) {
       return `1 / ${totalPages}`;
     }
-    const leftPage = currentPage + 1;
-    const rightPage = currentPage + 2;
-    if (rightPage <= totalPages) {
-      return `${leftPage}-${rightPage} / ${totalPages}`;
+    if (currentPage === 1) {
+      return `2 / ${totalPages}`;
     }
-    return `${leftPage} / ${totalPages}`;
+    
+    const leftPageNum = currentPage;
+    const rightPageNum = currentPage + 1;
+    
+    if (rightPageNum <= totalPages) {
+      return `${leftPageNum}-${rightPageNum} / ${totalPages}`;
+    }
+    return `${leftPageNum} / ${totalPages}`;
   };
 
   if (loading) {
@@ -353,13 +374,13 @@ function ReadingPage() {
       <div className="book-container">
         <HTMLFlipBook
           ref={bookRef}
-          width={450}
-          height={600}
+          width={400}
+          height={550}
           size="stretch"
-          minWidth={315}
-          maxWidth={800}
+          minWidth={300}
+          maxWidth={600}
           minHeight={400}
-          maxHeight={1200}
+          maxHeight={800}
           maxShadowOpacity={0.5}
           showCover={true}
           mobileScrollSupport={true}
@@ -465,10 +486,10 @@ function ReadingPage() {
         <span className="page-info">
           {getPageDisplay()}
         </span>
-        <button onClick={goToNextPage} disabled={currentPage >= totalPages - 1}>
+        <button onClick={goToNextPage} disabled={currentPage >= totalPages}>
           Next
         </button>
-        <button onClick={goToLastPage} disabled={currentPage >= totalPages - 1}>
+        <button onClick={goToLastPage} disabled={currentPage >= totalPages}>
           Last
         </button>
       </div>
