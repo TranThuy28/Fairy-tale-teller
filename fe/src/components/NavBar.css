@@ -1,15 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One:wght@400&family=Bubblegum+Sans:wght@400&display=swap');
+
 .navbar {
-  background-color: var(--text-light);
+  background-color: #fffbf0;
   padding: 16px;
-  color: var(--bg-light);
+  color: #333;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: 'Fredoka One', cursive;
+  font-weight: 400;
   position: sticky;
   top: 0;
   z-index: 1000;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  border-radius: 0 0 20px 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -21,9 +25,10 @@
 }
 
 .navbar-link {
-  color: var(--bg-light);
+  color: #333;
   text-decoration: none;
   font-size: 1rem;
+  font-weight: 500;
   transition: color 0.3s, transform 0.2s;
 }
 
@@ -40,10 +45,10 @@
 .search-input {
   padding: 10px;
   border-radius: 20px;
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid rgba(51,51,51,0.2);
   margin-right: 8px;
-  background-color: rgba(255,255,255,0.1);
-  color: var(--bg-light);
+  background-color: rgba(255,255,255,0.8);
+  color: #333;
   transition: border-color 0.3s;
 }
 
@@ -59,6 +64,10 @@
   transition: transform 0.2s;
 }
 
+.search-button svg {
+  color: #f4d03f;
+}
+
 .search-button:hover {
   transform: scale(1.1);
 }
@@ -69,6 +78,7 @@
 
 .icon {
   cursor: pointer;
+  color: #f4d03f;
   transition: color 0.3s;
 }
 

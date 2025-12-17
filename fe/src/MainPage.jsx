@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StoriesContext } from './context/StoriesContext'; 
 import "./MainPage.css";
+import goldenCloudImage from './assets/golden_cloud.jpg';
 
 function MainPage() {
   const context = useContext(StoriesContext); 
@@ -17,12 +18,13 @@ function MainPage() {
   return (
     <div className="main-page">
       <div className="hero-section">
+        <div className="hero-overlay-dark"></div>
         <div className="hero-content">
           <h1>Fairy Tale Teller</h1>
           <p>Lạc vào chốn thần tiên</p>
         </div>
         <img 
-          src="https://www.pixelstalk.net/wp-content/uploads/2025/08/Fairy-Desktop-Wallpaper-HD.jpg" 
+          src={goldenCloudImage} 
           alt="Library Hero" 
           className="hero-image"
         />

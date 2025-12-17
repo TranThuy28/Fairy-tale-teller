@@ -33,7 +33,7 @@ const NavBar = () => {
   };
 
   const handleLogout = () => {
-    if (window.confirm('Bạn có chắc muốn đăng xuất?')) {
+    if (window.confirm('Are you sure you want to logout?')) {
       logout();
     }
   };
@@ -42,20 +42,20 @@ const NavBar = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const notifications = ['Thông báo 1: Truyện mới', 'Thông báo 2: Cập nhật'];
+  const notifications = ['Notification 1: New Story', 'Notification 2: Update'];
 
   return (
-    <nav className={`navbar ${theme}`}>
+    <nav className="navbar">
       <div className="navbar-left">
         <FaBars className="hamburger-icon" size={24} onClick={toggleMenu} />
         <div className={`menu ${isMenuOpen ? 'open' : ''}`}>
           <Link to="/donate" className="navbar-link" onClick={toggleMenu}>Donate</Link>
-          <Link to="/" className="navbar-link" onClick={toggleMenu}>Trang Chủ</Link>
-          <Link to="/upload-story" className="navbar-link" onClick={toggleMenu}>Đăng Truyện</Link>
+          <Link to="/" className="navbar-link" onClick={toggleMenu}>Home</Link>
+          <Link to="/upload-story" className="navbar-link" onClick={toggleMenu}>Upload Story</Link>
           {user && (
             <>
-              <Link to="/read-stories" className="navbar-link" onClick={toggleMenu}>Truyện Đã Đọc</Link>
-              <Link to="/unread-stories" className="navbar-link" onClick={toggleMenu}>Truyện Chưa Đọc</Link>
+              <Link to="/read-stories" className="navbar-link" onClick={toggleMenu}>Read Stories</Link>
+              <Link to="/unread-stories" className="navbar-link" onClick={toggleMenu}>Unread Stories</Link>
             </>
           )}
         </div>
@@ -66,19 +66,18 @@ const NavBar = () => {
             <form onSubmit={handleSearch} className="search-form">
               <input
                 type="text"
-                placeholder="Tìm kiếm truyện..."
+                placeholder="Search stories..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="search-input"
               />
               <button type="submit" className="search-button">
-                <FaSearch size={20} color="white" />
+                <FaSearch size={20} />
               </button>
             </form>
             <div ref={notificationsRef} className="notifications-container">
               <FaBell
                 size={20}
-                color="white"
                 onClick={() => setShowNotifications(!showNotifications)}
                 className="icon"
               />
@@ -91,10 +90,10 @@ const NavBar = () => {
               )}
             </div>
             <button onClick={toggleTheme} className="theme-toggle" style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}>
-              {theme === 'light' ? <FaMoon size={20} color="white" /> : <FaSun size={20} color="white" />}
+              {theme === 'light' ? <FaMoon size={20} className="icon" /> : <FaSun size={20} className="icon" />}
             </button>
             <div className="user-avatar" onClick={handleLogout}>
-              <FaUserCircle size={30} color="white" />
+              <FaUserCircle size={30} className="icon" />
               <span className="user-email">{user.email}</span>
             </div>
           </>
@@ -102,10 +101,10 @@ const NavBar = () => {
           <>
             {/* Thêm toggle cho non-user */}
             <button onClick={toggleTheme} className="theme-toggle" style={{ background: 'transparent', border: 'none', cursor: 'pointer', marginRight: '16px' }}>
-              {theme === 'light' ? <FaMoon size={20} color="white" /> : <FaSun size={20} color="white" />}
+              {theme === 'light' ? <FaMoon size={20} className="icon" /> : <FaSun size={20} className="icon" />}
             </button>
-            <Link to="/signup" className="navbar-link">Đăng Ký</Link>
-            <Link to="/signin" className="navbar-link">Đăng Nhập</Link>
+            <Link to="/signup" className="navbar-link">Sign Up</Link>
+            <Link to="/signin" className="navbar-link">Sign In</Link>
           </>
         )}
       </div>
