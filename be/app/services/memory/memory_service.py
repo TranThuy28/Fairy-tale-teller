@@ -2,7 +2,7 @@ import logging
 import os
 from functools import lru_cache
 from pathlib import Path
-from typing import List
+from typing import List, Union
 
 try:
     from mem0 import Memory as Mem0Memory
@@ -24,14 +24,35 @@ class StoryMemory:
             return
 
         try:
-            storage_dir = Path(__file__).parent.parent.parent / "data" / "mem0_storage"
-            storage_dir.mkdir(parents=True, exist_ok=True)
+            # Use absolute path to ensure persistence across restarts
+            # Get project root (assuming we run from project root or be/ directory)
+            base_dir = os.getcwd()
+            
+            # Use a separate folder for memory chroma to avoid conflict with RAG chroma
+            # If running from project root: be/app/data/memory_chroma_db
+            # If running from be/: app/data/memory_chroma_db
+            if os.path.basename(base_dir) == "be":
+                # Running from be/ directory
+                memory_chroma_path = os.path.join(base_dir, "app", "data", "memory_chroma_db")
+            else:
+                # Running from project root
+                memory_chroma_path = os.path.join(base_dir, "be", "app", "data", "memory_chroma_db")
+            
+            # Convert to absolute path and normalize
+            memory_chroma_path = os.path.abspath(memory_chroma_path)
+            
+            # Create directory if it doesn't exist
+            os.makedirs(memory_chroma_path, exist_ok=True)
+            
+            print(f"🧠 Memory Storage Path (Chroma): {memory_chroma_path}")
+            logger.info("Mem0 Storage Path (ChromaDB, absolute): %s", memory_chroma_path)
 
             config = {
                 "vector_store": {
-                    "provider": "qdrant",
+                    "provider": "chroma",  # Switch to ChromaDB for better local persistence
                     "config": {
-                        "path": str(storage_dir),  # local persistent store
+                        "collection_name": "story_memory",
+                        "path": memory_chroma_path,
                     },
                 },
                 "embedder": {
@@ -51,7 +72,7 @@ class StoryMemory:
             }
 
             self.client = Mem0Memory.from_config(config)
-            logger.info("Initialized mem0 Memory for StoryMemory at %s", storage_dir)
+            logger.info("Initialized mem0 Memory for StoryMemory (ChromaDB) at %s", memory_chroma_path)
         except Exception as exc:
             logger.exception("Failed to initialize mem0 Memory: %s", exc)
             self.client = None
@@ -72,11 +93,51 @@ class StoryMemory:
         if not self.client:
             return ""
         try:
-            results: List[dict] = self.client.search(query=query, user_id=user_id) or []
-            if not results:
+            search_output = self.client.search(query=query, user_id=user_id)
+            
+            print(f"DEBUG: Raw Mem0 search output: {search_output}")
+            logger.debug("Mem0 search returned: type=%s", type(search_output).__name__)
+            
+            # 1. Normalize the output to a List
+            if isinstance(search_output, dict):
+                # Extract from {'results': [...]}
+                results_list = search_output.get("results", [])
+                logger.debug("Extracted 'results' key from dict, found %d items", len(results_list))
+            elif isinstance(search_output, list):
+                results_list = search_output
+                logger.debug("Search output is already a list with %d items", len(results_list))
+            else:
+                results_list = []
+                logger.warning("Unexpected search output type: %s", type(search_output).__name__)
+            
+            if not results_list:
+                logger.debug("No memories found for query: %s", query)
                 return ""
-            texts = [m.get("text", "") for m in results if m.get("text")]
-            return "\n".join(texts)
+            
+            # 2. Extract text strings from the list items
+            texts = []
+            for idx, m in enumerate(results_list):
+                logger.debug("Processing result[%d]: type=%s", idx, type(m).__name__)
+                
+                if isinstance(m, dict):
+                    # Mem0 item structure: {'memory': 'Text content', ...} or {'text': ...}
+                    content = m.get("memory", m.get("text", ""))
+                    if content:
+                        texts.append(str(content).strip())
+                        logger.debug("Extracted from dict: %s", str(content)[:50])
+                elif isinstance(m, str):
+                    if m.strip():
+                        texts.append(m.strip())
+                        logger.debug("Added string directly: %s", m[:50])
+            
+            print(f"DEBUG: Extracted memory texts: {texts}")
+            logger.debug("Final memory texts count: %d", len(texts))
+            
+            # Join texts with newlines and return
+            result = "\n".join(texts)
+            logger.debug("Final memories text (len=%d): %s", len(result), result[:200])
+            
+            return result
         except Exception as exc:
             logger.exception("Failed to search memories: %s", exc)
             return ""

@@ -39,6 +39,28 @@ const mockStories = [
     image: "https://cdn.tgdd.vn/Files/2018/06/08/1093983/cac-loai-xoai-pho-bien-o-viet-nam-1.jpg",
     pdf: "xoai_ngon_xoai_ngot.pdf",
   },
+  {
+    id: 6,
+    title: "Cinderella",
+    description: "The protagonist is a young girl living in unfortunate circumstances who is suddenly blessed with remarkable fortune, ultimately ascending to the throne through ...",
+    image: "https://salt.tikicdn.com/cache/750x750/media/catalog/product/1/6/16-princess-cinderella.u5430.d20170719.t165332.494990.jpg.webp",
+    pdf: "Cinderella.pdf",
+  },
+  {
+    id: 7,
+    title: "Rapunzel",
+    description: "Rapunzel is a classic fairy tale about a girl with magical, long golden hair, imprisoned in a tower by a witch (Dame Gothel) who uses her hair as a ladder to visit ...",
+    image: "https://preview.redd.it/rapunzel-in-her-tower-9-16-to-give-it-space-v0-n1ofrrb1ecna1.png?width=640&crop=smart&auto=webp&s=eb7de366e52006f75599a300e9568d01344a5c09",
+    pdf: "Rapunzel.pdf",
+  },
+  {
+    id: 8,
+    title: "The Little Mermaid",
+    description: "The Little Mermaid by Hans Christian Andersen is a tragic fairy tale about a young mermaid princess who longs for a human soul and falls for a prince she rescues from a shipwreck",
+    image: "https://images.squarespace-cdn.com/content/v1/5e01d4d4c4faa308239ed7b6/83d365e8-2e09-4126-be2b-ab477816e821/nRcBRec5Lq8qzV5MAkJGb956sPI.jpg",
+    pdf: "The_little_mermaid.pdf",
+  }
+  
 ];
 
 export const StoriesContext = createContext();

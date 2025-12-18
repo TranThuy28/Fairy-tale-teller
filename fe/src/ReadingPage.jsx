@@ -500,7 +500,7 @@ function ReadingPage() {
           ))}
           {chatLoading && (
             <div className="chat-msg bot thinking">
-              Cô đang suy nghĩ
+              Linda is thinking about your cute question ...
             </div>
           )}
         </div>

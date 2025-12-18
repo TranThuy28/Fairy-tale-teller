@@ -20,23 +20,44 @@ def build_prompt(
     context_segments: List[str],
     memories: str = "",
 ) -> str:
-    context = "\n\n".join(context_segments) if context_segments else "No context."
-    memory_block = memories or "Chưa có thông tin gì về sở thích của bé."
+    context = "\n\n".join(context_segments) if context_segments else "Không có ngữ cảnh từ truyện."
+    # Ensure memories is a string (handle both string and list cases)
+    if isinstance(memories, list):
+        memory_block = "\n".join(str(m) for m in memories if m) if memories else "Chưa có thông tin gì về bé."
+    else:
+        memory_block = memories if memories else "Chưa có thông tin gì về bé."
+    
     return f"""{LINDA_SYSTEM_PROMPT}
-
-THÔNG TIN CÔ BIẾT VỀ BÉ (MEMORY):
+=== INFORMATION I KNOW ABOUT THE CHILD (USER MEMORIES) ===
 {memory_block}
 
-NGỮ CẢNH TỪ TRUYỆN (RAG):
+=====================================================
+
+=== CONTEXT FROM THE STORY (STORY CONTEXT) ===
 {context}
 
-CÂU HỎI CỦA BÉ:
+===============================================
+
+=== THE CHILD'S QUESTION ===
 {question}
 
-HƯỚNG DẪN:
-1. Trả lời dựa TRÊN HAI PHẦN: ký ức về bé (MEMORY) và ngữ cảnh từ truyện (RAG).
-2. Nếu câu trả lời KHÔNG có trong ngữ cảnh truyện, hãy nói: "Cô chưa đọc đến đoạn đó, chúng mình cùng đọc tiếp nhé!" và KHÔNG bịa chuyện.
-3. Trả lời ngắn gọn trong 2–3 câu, dùng ngôn ngữ đơn giản cho bé 2–5 tuổi.
+=====================
+
+IMPORTANT INSTRUCTIONS:
+1. If the child asks about THEMSELVES (name, hobbies, memories, past stories):
+
+→ Use [USER MEMORIES] IMMEDIATELY. DO NOT say "I haven't read that part yet" for a question about the child.
+
+2. If the child asks about the STORY CONTENT (characters, plot details in the book):
+
+→ Use [STORY CONTEXT]. If it's not in context, say: "I haven't read that part yet, let's continue reading together!"
+
+3. Answer briefly in 2–3 sentences, using simple language suitable for children aged 2–5.
+
+⚠️ IMPORTANT NOTE:
+- [USER MEMORIES] is stored reference information. You ONLY READ and USE this information; DO NOT modify, delete, or create new memories in this section.
+
+- If the child provides new information, simply respond naturally. The system will automatically save it later.
 """
 
 
@@ -49,6 +70,10 @@ def ask_linda(
     """
     Use RAG context + optional long-term memory + OpenAI chat completion to answer.
     """
+    # Debug: Print memories content to console
+    print(f"DEBUG MEMORIES CONTENT: {memories_text}")
+    logger.debug("Memories retrieved (len=%d): %s", len(memories_text), memories_text[:200] + "..." if len(memories_text) > 200 else memories_text)
+    
     context_segments = query_story_context(question, top_k=top_k, filename=filename)
     prompt = build_prompt(question, context_segments, memories_text)
 
